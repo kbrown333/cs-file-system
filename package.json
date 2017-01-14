@@ -4,7 +4,7 @@
   "description": "Package for manipulating a file system",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,24 @@
   "bugs": {
     "url": "https://github.com/cloudspire/cs-file-system/issues"
   },
-  "homepage": "https://github.com/cloudspire/cs-file-system#readme"
+  "homepage": "https://github.com/cloudspire/cs-file-system#readme",
+  "dependencies": {
+    "fs-extra": "^1.0.0",
+    "body-parser": "^1.15.2",
+    "debug": "^2.2.0",
+    "express": "^4.14.0",
+    "formidable": "^1.0.17",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "list-directory-contents": "0.0.3",
+    "moment": "^2.15.1",
+    "morgan": "^1.7.0",
+    "node-cache": "^4.1.0",
+    "node-json-db": "^0.7.3",
+    "path": "^0.12.7",
+    "request": "^2.75.0",
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^1.7.2",
+    "underscore": "^1.8.3"
+  }
 }
