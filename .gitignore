@@ -27,3 +27,4 @@ node_modules/*
 !jsdb
 jsdb/*
 !jsdb/data_model.js
+npm-debug.log
