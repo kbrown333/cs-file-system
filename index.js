@@ -61,3 +61,7 @@ console.log('Application available at port: ' + app.get('port'));
 //INITIALIZE GLOBAL CACHE
 var NodeCache = require( "node-cache" );
 global.default_cache = new NodeCache();
+
+// require("./controllers/file_system").get_files(global.svr_config.drives)
+// 	.then((files) => { console.log(files); })
+// 	.catch((errs) => { console.log(errs); });
