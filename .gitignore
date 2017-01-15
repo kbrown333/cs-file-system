@@ -32,3 +32,5 @@ npm-debug.log
 scripts/*
 !scripts/startup
 scripts/startup/*
+dev
+dev/*

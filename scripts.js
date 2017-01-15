@@ -22,7 +22,7 @@ function startup_scripts(drives) {
 		if (err) { console.dir(err); }
 		finished();
 	});
-	//MOUNT DRIVE(S) SCRIPTS
+	//MOUNT DRIVE(S) SCRIPT
 	if (drives != null) {
 		var mount_script = bash_prefix.slice(0);
 		var keys = Object.keys(drives);
@@ -42,6 +42,7 @@ function startup_scripts(drives) {
 	}
 }
 
+//HARD-CODED TEMPLATE STRINGS
 var bash_prefix =
 `#!/bin/sh
 

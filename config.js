@@ -1,3 +1,4 @@
+//INITIALIZATION
 var jsondb = require('node-json-db');
 var scripts = require('./scripts');
 db = new jsondb('jsdb/db_config', true, false);
@@ -5,6 +6,7 @@ var config;
 try { config = db.getData('/svr'); }
 catch (ex) { config = db.push('/svr', {}); }
 
+//COMMAND LINE PARAMETER PARSER
 var parms = process.argv.slice(2);
 if (parms == 0) {
 	console.log('No parameters found.');
@@ -25,6 +27,7 @@ switch(parms[0]) {
 		break;
 }
 
+//METHOD ENDPOINTS FOR COMMAND LINE OPERATIONS
 function set_config_parm(arr) {
 	if (arr.length == 0) {
 		console.log("Key and Value parameters missing.");
