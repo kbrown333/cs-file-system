@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "stop": "pkill --signal SIGINT cs-file-system"
+    "stop": "pkill --signal SIGINT cs-file-system",
+    "help": "node about.js"
   },
   "repository": {
     "type": "git",
