@@ -8,9 +8,8 @@ module.exports.get_files = function(drives) {
 			error("No drives found.");
 		} else {
 			var files = {}, errs = [];
-			var keys = Object.keys(drives);
-			if (keys.length == 0) { error("No drives found."); }
-			var finished = __.after(keys.length, function() {
+			if (drives.length == 0) { error("No drives found."); }
+			var finished = __.after(drives.length, function() {
 				if (errs.length > 0) {
 					error('Error retrieving files.');
 				} else {
@@ -29,11 +28,11 @@ module.exports.get_files = function(drives) {
 					finished();
 				}
 			}
-			for (var i = 0; i < keys.length; i++) {
+			for (var i = 0; i < drives.length; i++) {
 				(function(index) {
-					var key = keys[index];
+					var key = drives[index].name;
 					console.log('getting drive "' + key + '"');
-					ls(drives[key] + '/', (err, tree) => { add(err, tree, key); });
+					ls(drives[index].path + '/', (err, tree) => { add(err, tree, key); });
 				})(i);
 			}
 		}
@@ -62,7 +61,7 @@ module.exports.build_structure = function(drives) {
 			} else {
 				parts.shift();
 				var new_path = parts.reduce(reduce_path, '');
-				this.create_file_path(new_path, current_dir[dir]);
+				create_file_path(new_path, current_dir[dir]);
 			}
 		}
 	}
@@ -72,7 +71,7 @@ module.exports.build_structure = function(drives) {
 			key = keys[i];
 			dirs[key] = {};
 			for (var j = 0; j < drives[key].length; j++) {
-				this.create_file_path(drives[key][j], dirs[key]);
+				create_file_path(drives[key][j], dirs[key]);
 			}
 		}
 		res(dirs);

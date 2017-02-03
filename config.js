@@ -1,3 +1,6 @@
+var fs_old = require('fs');
+var fs = require('fs-extra');
+
 //INITIALIZATION
 var jsondb = require('node-json-db');
 var scripts = require('./scripts');
@@ -45,16 +48,39 @@ function add_drive(arr) {
 	if (arr.length == 0) {
 		console.log("Alias and Path parameters missing.");
 		return;
-	} else if (arr.length == 1) {
-		console.log("Path parameter missing.");
-		return;
 	}
-	if (config.drives == null) { config.drives = {}; }
-	config.drives[arr[0]] = __dirname + arr[1];
-	db.push('/svr', config);
-	scripts.generate('startup', config.drives);
-	console.log('External drive "' + arr[0] + '" is now configured.');
-	console.log('For new drives to be available, please restart device.')
+	if (config.drives == null) { config.drives = []; }
+
+	var success = true, type, path, create;
+	if (arr.length == 1) {
+		type = 'sda';
+		path = __dirname + '/dev/' + arr[0] + '/';
+		create = function() { fs.ensureDirSync(path); }; // create path
+	} else {
+		type = 'sym';
+		path = __dirname + '/dev/' + arr[0];
+		var lnk = arr[1];
+		create = function() { fs.symlinkSync(lnk, path); }; // create sym link
+	}
+
+	if (!containsKey(config.drives, 'name', arr[0])) {
+		config.drives.push({
+			name: arr[0],
+			type: type,
+			path: path
+		});
+		create();
+	} else {
+		console.log('Mounted alias "' + arr[0] + '" already exists!');
+		success = false;
+	}
+
+	if (success) {
+		db.push('/svr', config);
+		scripts.generate('startup', config.drives);
+		console.log('External drive "' + arr[0] + '" is now configured.');
+		console.log('For new drives to be available, please restart device.')
+	}
 }
 
 function generate_scripts(arr) {
@@ -69,4 +95,11 @@ function generate_scripts(arr) {
 		default:
 			console.log('Script type "' + arr[0] + '" not found.')
 	}
+}
+
+function containsKey(arr, key, val) {
+	if (arr == null || val == null || key == null) { return false; }
+	return arr.filter((x) => {
+		x[key] == val;
+	}).length > 0;
 }

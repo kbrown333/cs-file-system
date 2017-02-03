@@ -15,10 +15,10 @@ app.use(logger('dev'));
 require('./jsdb/data_model').init();
 
 //Load Middleware Functions
-
+var mw_Files = require('./routes/files');
 
 //Route Paths to Middleware
-
+app.use('/api/files', mw_Files)
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -61,7 +61,3 @@ console.log('Application available at port: ' + app.get('port'));
 //INITIALIZE GLOBAL CACHE
 var NodeCache = require( "node-cache" );
 global.default_cache = new NodeCache();
-
-// require("./controllers/file_system").get_files(global.svr_config.drives)
-// 	.then((files) => { console.log(files); })
-// 	.catch((errs) => { console.log(errs); });

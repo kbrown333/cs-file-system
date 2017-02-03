@@ -25,10 +25,12 @@ function startup_scripts(drives) {
 	//MOUNT DRIVE(S) SCRIPT
 	if (drives != null) {
 		var mount_script = bash_prefix.slice(0);
-		var keys = Object.keys(drives);
-		if (keys.length > 0) {
-			for (var i = 0; i < keys.length; i++) {
-				mount_script += mount.replace("{{index}}", i+1).replace("{{path}}", drives[keys[i]]);
+		if (drives.length > 0) {
+			for (var i = 0; i < drives.length; i++) {
+				if (drives[i].type == "sda") {
+					mount_script += mount.replace("{{index}}", i+1).replace("{{path}}", drives[i].path);
+					mount_script += '\r\n';
+				}
 			}
 			fs.outputFile('./scripts/startup/mount_drives.sh', mount_script, (err) => {
 				if (err) { console.dir(err); }
