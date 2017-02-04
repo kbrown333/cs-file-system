@@ -1,8 +1,8 @@
 var express = require('express');
-var ls = require('list-directory-contents');
+var ls = require('cs-file-tree');
 var __ = require('underscore');
 
-module.exports.get_files = function(drives) {
+module.exports.get_list = function(drives) {
 	return new Promise((res, error) => {
 		if (drives == null) {
 			error("No drives found.");
@@ -31,50 +31,35 @@ module.exports.get_files = function(drives) {
 			for (var i = 0; i < drives.length; i++) {
 				(function(index) {
 					var key = drives[index].name;
-					console.log('getting drive "' + key + '"');
-					ls(drives[index].path + '/', (err, tree) => { add(err, tree, key); });
+					ls.getList(drives[index].path, (err, tree) => { add(err, tree, key); });
 				})(i);
 			}
 		}
 	});
 }
 
-module.exports.build_structure = function(drives) {
-	function create_file_path(path, current_dir) {
-		var parts = path.split('/').filter((val) => {return val != "";});
-		if (parts.length == 1) {
-			if (current_dir['_files_'] == null) { current_dir['_files_'] = []; }
-			current_dir['_files_'].push(parts[0]);
+module.exports.get_object = function(drives) {
+	return new Promise((res, error) => {
+		if (drives == null) {
+			error("No drives found.");
 		} else {
-			var dir = parts[0];
-			if (current_dir[dir] == null) {
-				current_dir[dir] = {'...': {}, '_files_': []}
-			};
-			if (parts.length == 2) {
-				var periodIndex = parts[1].lastIndexOf('.');
-				//if folder
-				if (periodIndex == 4 || periodIndex == 5) {
-					current_dir[dir][parts[1]] = {'...': {}, '_files_': []}
-				} else {
-					current_dir[dir]['_files_'].push(parts[1]);
-				}
-			} else {
-				parts.shift();
-				var new_path = parts.reduce(reduce_path, '');
-				create_file_path(new_path, current_dir[dir]);
+			var rslt = {};
+			var finished = __.after(drives.length, function() {
+				res(rslt);
+			});
+			for (var i = 0; i < drives.length; i++) {
+				(function(index) {
+					var key = drives[index].name;
+					ls.getObject(drives[index].path, (err, tree) => {
+						if (err) {
+							console.dir(err);
+						}
+						rslt[key] = tree;
+						finished();
+					});
+				})(i);
 			}
 		}
-	}
-	return new Promise((res, err) => {
-		var dirs = {}, keys = Object.keys(drives), key;
-		for (var i = 0; i < keys.length; i++) {
-			key = keys[i];
-			dirs[key] = {};
-			for (var j = 0; j < drives[key].length; j++) {
-				create_file_path(drives[key][j], dirs[key]);
-			}
-		}
-		res(dirs);
 	});
 }
 
