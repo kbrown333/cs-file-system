@@ -23,7 +23,7 @@ module.exports.get_list = function(drives) {
 				} else {
 					files[key] = [];
 					tree.forEach(function(file, index) {
-						files[key].push(file.replace(/\\/g, '/'));
+						files[key].push(file);
 					});
 					finished();
 				}

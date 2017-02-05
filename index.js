@@ -11,14 +11,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
 
+//CREATE STATIC PATH FOR CLIENT FILES
+app.set('views', path.join(__dirname, 'client/src'));
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html')
+app.use(express.static(path.join(__dirname, 'client/src')));
+
 //INITIALIZE JSON-DABATABSE
 require('./jsdb/data_model').init();
 
 //Load Middleware Functions
+var mw_Index = require('./routes/static/index');
 var mw_Files = require('./routes/files');
 
 //Route Paths to Middleware
-app.use('/api/files', mw_Files)
+app.use('/', mw_Index);
+app.use('/api/files', mw_Files);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

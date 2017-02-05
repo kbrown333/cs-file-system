@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Cloudspire Technology</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="app/styles/aurelia-default.css" />
+    <link rel="stylesheet" href="app/styles/btsp-cyborg.css" />
+    <link rel="stylesheet" href="app/styles/bootstrap-addon.css" />
+    <script type="text/javascript" src="app/javascript/jquery.js"></script>
+    <style>
+        body {
+            background-image: url(./app/images/pattern_40.gif);
+        }
+    </style>
+</head>
+<body>
+    <div aurelia-app="main">
+        <div class="splash">
+            <div class="message">Loading your content...</div>
+            <i class="fa fa-spinner fa-spin fa-3x"></i>
+        </div>
+        <script src="jspm_packages/system.js"></script>
+        <script src="config.js"></script>
+        <script>
+            SystemJS.import('aurelia-bootstrapper');
+        </script>
+    </div>
+</body>
+</html>

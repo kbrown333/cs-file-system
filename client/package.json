@@ -1,0 +1,38 @@
+{
+  "name": "cs-file-system-client",
+  "version": "1.0.0",
+  "description": "User interface for cs-file-system.",
+  "main": "public/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cloudspire Technology",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.0.2",
+    "typescript": "^2.0.3"
+  },
+  "dependencies": {
+    "aurelia-bundler": "^0.4.0"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "src"
+    },
+    "dependencies": {
+      "aurelia-bootstrapper": "npm:aurelia-bootstrapper@^1.0.0",
+      "aurelia-event-aggregator": "npm:aurelia-event-aggregator@^1.0.0",
+      "aurelia-fetch-client": "npm:aurelia-fetch-client@^1.0.1",
+      "aurelia-framework": "npm:aurelia-framework@^1.0.6",
+      "bootstrap": "github:twbs/bootstrap@^3.3.7",
+      "jquery": "npm:jquery@^3.1.1"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4",
+      "typescript": "npm:typescript@^1.6.2"
+    }
+  }
+}
