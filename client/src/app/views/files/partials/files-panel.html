@@ -1,0 +1,96 @@
+<template>
+    <require from="../../../attributes/toggle-me"></require>
+    <require from="../../../attributes/dbl-click"></require>
+    <require from="../../../attributes/one-click"></require>
+	<div class="row show_on_mobile">
+		<div style="float: right; margin: 0px 20px 15px 0px;">
+			<i class="fa fa-times panel-hdr-btn delete_btn" toggle-me.two-way="hdr_btns.select_all"
+				click.delegate="delete_files()"></i>
+			<i class="fa fa-download panel-hdr-btn download_btn"
+				toggle-me.two-way="hdr_btns.select_single" click.delegate="download_file()"></i>
+			<i class="fa fa-pencil panel-hdr-btn edit_btn" toggle-me.two-way="hdr_btns.select_single"
+				click.delegate="open_rename_modal()"></i>
+			<i class="fa fa-plus panel-hdr-btn new_folder_btn" click.delegate="open_add_folder()"></i>
+			<i class="fa fa-upload panel-hdr-btn upload_btn" click.delegate="click_upload_btn()"></i>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<div style="display: inline-block; margin-right: 7px;">
+						<i class="fa fa-table"></i>
+					</div>
+					<div style="display: inline-block;">
+						<h3 if.bind="display_path == ''" class="panel-title">${current_path}</h3>
+                        <h3 if.bind="display_path != ''" class="panel-title">${display_path}</h3>
+					</div>
+					<div class="show_on_monitor" style="display: inline-block; float: right;">
+						<i class="fa fa-times panel-hdr-btn delete_btn" toggle-me.two-way="hdr_btns.select_all"
+							click.delegate="delete_files()"></i>
+						<i class="fa fa-download panel-hdr-btn download_btn"
+							toggle-me.two-way="hdr_btns.select_single" click.delegate="download_file()"></i>
+						<i class="fa fa-pencil panel-hdr-btn edit_btn" toggle-me.two-way="hdr_btns.select_single"
+							click.delegate="open_rename_modal()"></i>
+						<i class="fa fa-plus panel-hdr-btn new_folder_btn" click.delegate="open_add_folder()"></i>
+						<i class="fa fa-upload panel-hdr-btn upload_btn" click.delegate="click_upload_btn()"></i>
+					</div>
+				</div>
+				<input id="upload-input" type="file" name="uploads[]" multiple="multiple" style="display: none;">
+				<div class="panel-body" panel-type="files-panel">
+					<div class="row" toggle-me.two-way="nav.show_loader">
+						<div class="col-xs-12" style="color: white; text-align: center; margin-top: 20px;">
+							<i class="fa fa-spinner fa-spin fa-3x"></i>
+						</div>
+					</div>
+					<div class="row" toggle-me.two-way="nav.show_files">
+						<div toggle-me.two-way="nav.up_level">
+							<div class="col-lg-2 col-md-3 col-sm-4">
+								<div class="icon-block drag_me drop_here" block-type="folder">
+									<input class="hidden_input" value.bind="na" />
+									<div class="icon-row">
+										<i class="fa fa-folder fa-3x"
+											dbl-click="event.bind: 'openFolder'; data.bind: '...';"></i>
+									</div>
+									<div class="icon-row">
+										<span>...</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div repeat.for="folder of visible_folders">
+							<div class="col-lg-2 col-md-3 col-sm-4">
+								<div class="icon-block drag_me drop_here" block-type="folder">
+									<input class="hidden_input" value.bind="folder" />
+									<div class="icon-row">
+										<i class="fa fa-folder fa-3x"
+											dbl-click="event.bind: 'openFolder'; data.bind: folder;"
+											one-click="event.bind: 'selectFolder'; data.bind: $index;"></i>
+									</div>
+									<div class="icon-row">
+										<span>${folder}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div repeat.for="file of visible_files">
+							<div class="col-lg-2 col-md-3 col-sm-4" icon-file="${file}">
+								<div class="icon-block drag_me" block-type="file">
+									<input class="hidden_input" value.bind="file" />
+									<div class="icon-row">
+										<i class="fa fa-file-o fa-3x"
+											one-click="event.bind: 'selectFile'; data.bind: $index;"
+											dbl-click="event.bind: 'openFile'; data.bind: file"></i>
+									</div>
+									<div class="icon-row">
+										<span>${file}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

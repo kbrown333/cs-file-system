@@ -34,12 +34,6 @@ System.register(["aurelia-framework", "../../models/FnTs", "../../models/session
                         { name: 'Pictures', event: 'loadPage', data: 'pictures' },
                         { name: 'Documents', event: 'loadPage', data: 'documents' }
                     ];
-                    this.dir = {
-                        music: { '_files_': [] },
-                        videos: { '_files_': [] },
-                        pictures: { '_files_': [] },
-                        documents: { '_files_': [] },
-                    };
                 }
                 attached() {
                     this.app_events = this.fn.ea.subscribe('react', (event) => {
@@ -51,7 +45,6 @@ System.register(["aurelia-framework", "../../models/FnTs", "../../models/session
                 detached() {
                     this.app_events.dispose();
                 }
-                //Event Aggregator Functions
                 screenResize(size = null) {
                 }
             };

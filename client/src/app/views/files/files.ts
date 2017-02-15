@@ -12,12 +12,6 @@ export class Files {
         {name: 'Pictures', event: 'loadPage', data: 'pictures'},
         {name: 'Documents', event: 'loadPage', data: 'documents'}
 	];
-	dir = {
-		music: {'_files_': []},
-		videos: {'_files_': []},
-		pictures: {'_files_': []},
-		documents: {'_files_': []},
-	};
 
 	constructor(private fn: FnTs, private session: SessionData) {
 
