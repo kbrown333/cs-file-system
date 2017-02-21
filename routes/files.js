@@ -20,4 +20,14 @@ router.get('/build', function(req, res) {
 		});
 });
 
+router.all('/mod/*', function(req, res, next) {
+	console.log('testing');
+	next();
+});
+
+router.post('/mod/rename', function(req, res) {
+	console.dir(req.body);
+	res.json({});
+});
+
 module.exports = router;
