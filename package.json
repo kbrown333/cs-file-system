@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/cloudspire/cs-file-system.git"
   },
-  "author": "Cloudspire Technology",
+  "author": "Kyle Brown",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cloudspire/cs-file-system/issues"
