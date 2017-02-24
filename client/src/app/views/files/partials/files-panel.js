@@ -1,4 +1,4 @@
-System.register(["aurelia-framework", "../../../models/FnTs"], function (exports_1, context_1) {
+System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/session"], function (exports_1, context_1) {
     "use strict";
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -10,7 +10,7 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
     var __moduleName = context_1 && context_1.id;
-    var aurelia_framework_1, FnTs_1, FilesPanel;
+    var aurelia_framework_1, FnTs_1, session_1, FilesPanel;
     return {
         setters: [
             function (aurelia_framework_1_1) {
@@ -18,18 +18,23 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
             },
             function (FnTs_1_1) {
                 FnTs_1 = FnTs_1_1;
+            },
+            function (session_1_1) {
+                session_1 = session_1_1;
             }
         ],
         execute: function () {
             FilesPanel = class FilesPanel {
-                constructor(fn) {
+                constructor(fn, session) {
                     this.fn = fn;
+                    this.session = session;
                     this.directory = {};
                     this.orig_directory = {};
                     this.is_root = true;
                     this.selected_objects = [];
                     this.cntl_enabled = false;
                     this.hdr_btns = {
+                        all: 'hide',
                         select_all: 'hide',
                         select_single: 'hide'
                     };
@@ -57,21 +62,6 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                             current_path: this.current_path
                         };
                     };
-                    this.getDirectory = (data) => {
-                        if (data.current_path == "/") {
-                            data.current_directory = data.directory;
-                            return data;
-                        }
-                        var dir = data.directory;
-                        var tmp = data.current_path.split('/');
-                        var path;
-                        for (var i = 1; i < tmp.length; i++) {
-                            path = tmp[i];
-                            dir = dir[path];
-                        }
-                        data.current_directory = dir;
-                        return data;
-                    };
                     this.renderDirectory = (data) => {
                         this.current_path = data.current_path;
                         this.directory = data.directory;
@@ -84,15 +74,16 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                             this.setDrivePath();
                         }
                         if (data.current_path == "/") {
+                            this.hdr_btns.all = 'hide';
                             this.nav.up_level = 'hide';
                             this.is_root = true;
                         }
                         else {
+                            this.hdr_btns.all = 'show';
                             this.nav.up_level = 'show';
                             this.is_root = false;
                         }
                         setTimeout(() => {
-                            this.register_drag_drop();
                             this.show_files();
                         }, 500);
                         return data;
@@ -104,11 +95,21 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                             this.current_drive = tmp[0];
                         }
                     };
-                    this.is_first_level = () => {
-                        var tmp = this.current_path.split('/');
-                        tmp.pop();
-                        tmp = tmp.filter((val) => { return val != ""; });
-                        return tmp.length == 0;
+                    this.copy_files = () => {
+                        this.session.runtime['clipboard'] = this.selected_objects;
+                        this.fn.ea.publish('react', { event_name: 'displayToast', data: 'Files Copied' });
+                    };
+                    this.paste_files = () => {
+                        var data = {};
+                        this.fn.fn_Ajax(data)
+                            .then(this.loadAllData)
+                            .catch((err) => {
+                            console.log(err.responseText);
+                            this.show_files();
+                        });
+                    };
+                    this.click_upload_btn = () => {
+                        $('#upload-input').click();
                     };
                 }
                 attached() {
@@ -129,6 +130,9 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                             this.cntl_enabled = false;
                         }
                     });
+                    $("#upload-input").on('change', () => {
+                        this.upload_files_selected();
+                    });
                 }
                 detached() {
                     this.app_events.dispose();
@@ -145,6 +149,21 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                     this.fn.fn_Ajax({ url: this.ajax_path })
                         .then((rslt) => { this.orig_directory = rslt; this.directory = rslt; return rslt; })
                         .then(this.loadAllData);
+                }
+                getDirectory(data) {
+                    if (data.current_path == "/") {
+                        data.current_directory = data.directory;
+                        return data;
+                    }
+                    var dir = data.directory;
+                    var tmp = data.current_path.split('/');
+                    var path;
+                    for (var i = 1; i < tmp.length; i++) {
+                        path = tmp[i];
+                        dir = dir[path];
+                    }
+                    data.current_directory = dir;
+                    return data;
                 }
                 buildDirectory(data) {
                     var files = [], folders = [];
@@ -187,58 +206,42 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                     data = this.getDirectory(data);
                     this.renderDirectory(this.buildDirectory(data));
                 }
-                register_drag_drop() {
-                    var move = (from, to, is_folder) => {
-                        this.move_object(from, to, is_folder);
-                    };
-                    if (this.is_root) {
-                        if (this.draggable_loaded) {
-                            $(".drag_me").draggable('disable');
-                        }
-                        return;
-                    }
-                    $(".drag_me").draggable({ revert: true });
-                    $(".drop_here").droppable({
-                        classes: {
-                            "ui-droppable-active": "ui-state-active",
-                            "ui-droppable-hover": "ui-state-hover"
-                        },
-                        drop: function (event, ui) {
-                            var from = $(".hidden_input", ui.draggable).val();
-                            var to = $(".hidden_input", this).val();
-                            var is_folder = $(ui.draggable).attr('block-type') == 'folder';
-                            move(from, to, is_folder);
-                        }
-                    });
-                    this.draggable_loaded = true;
-                    if (this.is_first_level()) {
-                        $('.drop_here[cs-flag="up_level"]').droppable("option", "disabled", true);
-                    }
-                }
-                move_object(obj, folder, is_folder) {
-                    this.show_loader();
-                    var old_path = this.current_path + '/' + obj;
-                    var dest;
-                    if (folder == "...") {
-                        var tmp = this.current_path.split('/');
-                        tmp.pop();
-                        tmp = tmp.filter((val) => { return val != ""; });
-                        dest = tmp.reduce(this.reduce_path, '');
-                        dest += ("/" + obj);
+                get_subpath(curr_path) {
+                    var tmp = curr_path.split('/');
+                    tmp = tmp.filter((val) => { return val != ""; });
+                    if (tmp.length > 1) {
+                        return tmp.slice(1).reduce(this.reduce_path, '');
                     }
                     else {
-                        dest = this.current_path + "/" + folder + "/" + obj;
+                        return "/";
                     }
+                }
+                upload_files_selected() {
+                    var files = $('#upload-input').get(0).files;
+                    if (files.length > 0) {
+                        var formData = new FormData();
+                        for (var i = 0; i < files.length; i++) {
+                            var file = files[i];
+                            formData.append('uploads[]', file, file.name);
+                        }
+                        this.upload(formData);
+                    }
+                }
+                upload(formData) {
                     var data = {
-                        data: { old_name: old_path, new_name: dest },
-                        url: '/api/files/mod/rename',
-                        type: 'POST'
+                        url: '/api/files/upload',
+                        type: 'POST',
+                        headers: {
+                            'x-path': this.get_subpath(this.current_path),
+                            'x-drive': this.current_drive
+                        },
+                        data: formData,
+                        processData: false,
+                        contentType: false
                     };
                     this.fn.fn_Ajax(data)
-                        .then(this.loadAllData)
-                        .catch((err) => {
-                        console.log(err.responseText);
-                        this.show_files();
+                        .then((rslt) => {
+                        var test = rslt;
                     });
                 }
                 select_block(elem, index, type) {
@@ -264,7 +267,6 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                             select = true;
                         }
                     }
-                    var count = this.set_button_status();
                     var fetch_obj;
                     if (type == "file") {
                         fetch_obj = this.visible_files;
@@ -272,17 +274,17 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                     else {
                         fetch_obj = this.visible_folders;
                     }
+                    var count = this.set_button_status();
                     if (count == 0) {
                         this.selected_objects = [];
                     }
                     else if (count == 1) {
-                        elem;
                         this.selected_objects = [];
-                        this.selected_objects.push(fetch_obj[index]);
+                        this.selected_objects.push({ name: fetch_obj[index], type: type });
                     }
                     else {
                         if (select) {
-                            this.selected_objects.push(fetch_obj[index]);
+                            this.selected_objects.push({ name: fetch_obj[index], type: type });
                         }
                         else {
                             var name = fetch_obj[index];
@@ -355,8 +357,7 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                     this.fn.ea.publish('react', { event_name: event, data: data });
                 }
                 selectFolder(index) {
-                    index++;
-                    var elem = $($('.icon-block[block-type="folder"]')[index]);
+                    var elem = $($('.icon-block[block-type="folder"]')[index + 1]);
                     this.select_block(elem, index, 'folder');
                 }
                 selectFile(index) {
@@ -368,8 +369,8 @@ System.register(["aurelia-framework", "../../../models/FnTs"], function (exports
                 aurelia_framework_1.bindable({ name: 'current_path', defaultValue: '/' }),
                 aurelia_framework_1.bindable({ name: 'display_path', defaultValue: '' }),
                 aurelia_framework_1.bindable({ name: 'ajax_path', defaultValue: '/api/files/build' }),
-                aurelia_framework_1.inject(FnTs_1.FnTs),
-                __metadata("design:paramtypes", [FnTs_1.FnTs])
+                aurelia_framework_1.inject(FnTs_1.FnTs, session_1.SessionData),
+                __metadata("design:paramtypes", [FnTs_1.FnTs, session_1.SessionData])
             ], FilesPanel);
             exports_1("FilesPanel", FilesPanel);
         }

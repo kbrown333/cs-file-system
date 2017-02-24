@@ -39,6 +39,29 @@ router.get('/build', function(req, res) {
 	}
 });
 
+router.post('/upload', function(req, res) {
+	var add_path = req.headers['x-path'];
+	var drive_name = req.headers['x-drive'];
+	if (add_path == null || drive_name == null) {
+		res.status(500).send('Missing path / drive parameter(s)');
+	} else {
+		var drive = get_drive_by_name(drive_name);
+		if (drive != null) {
+			var path = drive.path + add_path + (add_path == '/' ? '' : '/');
+			csfs.upload_files(req, path, function(err, rslt) {
+				if (err) {
+					console.dir(err);
+					res.status(500).send('Error uploading files');
+				} else {
+					res.status(200).send('Success');
+				}
+			});
+		} else {
+			res.status(500).send('Invalid drive name');
+		}
+	}
+});
+
 router.all('/mod/*', function(req, res, next) {
 	console.log('testing');
 	next();
@@ -54,7 +77,7 @@ module.exports = router;
 function cache_files(data) {
 	return new Promise((res, err) => {
 		if (dbcontext.svr_config.get_key('cache') == 'on') {
-			dbcontext.build.update(data);
+			dbcontext.files.update(data);
 			dbcontext.svr_config.set_key('files_cached', 'true');
 		}
 		res(data);
@@ -64,9 +87,20 @@ function cache_files(data) {
 function cache_build(data) {
 	return new Promise((res, err) => {
 		if (dbcontext.svr_config.get_key('cache') == 'on') {
-			dbcontext.files.update(data);
+			dbcontext.build.update(data);
 			dbcontext.svr_config.set_key('build_cached', 'true');
 		}
 		res(data);
 	});
+}
+
+function get_drive_by_name(drive_name) {
+	var drives = dbcontext.svr_config.get_key('drives');
+	if (drives == null) { return null; }
+	var drive = drives.filter((val) => {return val.name == drive_name});
+	if (drive.length > 0) {
+		return drive[0];
+	} else {
+		return null;
+	}
 }

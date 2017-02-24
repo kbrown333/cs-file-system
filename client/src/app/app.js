@@ -28,12 +28,10 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
         ],
         execute: function () {
             App = class App {
-                //APPLICATION LOAD FUNCTIONS
                 constructor(router, session, fn) {
                     this.router = router;
                     this.session = session;
                     this.fn = fn;
-                    //APP EVENTS
                     this.toggle_header = () => {
                         $(".collapse").toggle();
                     };
@@ -42,6 +40,12 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                         setTimeout(() => {
                             this.session.visibility.aside = 'slide';
                         }, 10);
+                    };
+                    this.displayToast = (msg) => {
+                        this.toast_msg = msg;
+                        var div = document.getElementById('snackbar');
+                        div.className = "show";
+                        setTimeout(() => { div.className = div.className = ""; }, 3000);
                     };
                     this.automate = (data) => {
                         this.fn.ea.publish('react', { event_name: 'receiveCommand', data: data });

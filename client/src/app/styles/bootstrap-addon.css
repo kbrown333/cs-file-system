@@ -164,6 +164,10 @@ i.delete_btn {
     background-color: #880C0C;
     color: white;
 }
+i.copy_btn {
+    background-color: blue;
+    color: white;
+}
 .hidden_input {
     display: none;
 }

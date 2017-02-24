@@ -128,6 +128,32 @@ div.au-stagger {
   border: 2px #FFF solid;
 }
 
+/*Toast / Snackbar*/
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    top: 30px;
+    font-size: 17px;
+}
+
+#snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#snackbar {
+    background-color: #fff;
+    color: #333;
+}
+
 /* animation definitions */
 @-webkit-keyframes fadeInRight {
   0% {

@@ -62,6 +62,14 @@ export class App {
         });
     }
 
+    toast_msg: string;
+    displayToast = (msg: any) => {
+        this.toast_msg = msg;
+        var div = document.getElementById('snackbar');
+        div.className = "show";
+        setTimeout(() => { div.className = div.className = ""; }, 3000);
+    }
+
     automate = (data: any) => {
         this.fn.ea.publish('react', {event_name: 'receiveCommand', data: data})
     }

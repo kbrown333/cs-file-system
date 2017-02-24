@@ -1,10 +1,11 @@
 import {inject, bindable, bindingMode} from 'aurelia-framework';
 import {FnTs} from '../../../models/FnTs';
+import {SessionData} from '../../../models/session';
 
 @bindable({name: 'current_path', defaultValue: '/'})
 @bindable({name: 'display_path', defaultValue: ''})
 @bindable({name: 'ajax_path', defaultValue: '/api/files/build' })
-@inject(FnTs)
+@inject(FnTs, SessionData)
 export class FilesPanel {
 
 	app_events: any;
@@ -20,6 +21,7 @@ export class FilesPanel {
 	selected_objects: any = [];
 	cntl_enabled: boolean = false;
 	hdr_btns: any = {
+		all: 'hide',
 		select_all: 'hide',
 		select_single: 'hide'
 	}
@@ -31,7 +33,7 @@ export class FilesPanel {
 	draggable_loaded: boolean = false;
 	reduce_path = (a, b) => {return a + '/' + b;};
 
-	constructor(private fn: FnTs) {
+	constructor(private fn: FnTs, private session: SessionData) {
 
 	}
 
@@ -47,9 +49,9 @@ export class FilesPanel {
 		$('body').keyup((event: JQueryEventObject) => {
 			if (event.which == 17) { this.cntl_enabled = false; }
 		});
-		// $("#upload-input").on('change', () => {
-		// 	this.upload_files_selected();
-		// });
+		$("#upload-input").on('change', () => {
+			this.upload_files_selected();
+		});
 	}
 
 	detached() {
@@ -91,7 +93,7 @@ export class FilesPanel {
 		};
 	}
 
-	getDirectory = (data: any): any => {
+	getDirectory(data: any): any {
 		if (data.current_path == "/") {
 			data.current_directory = data.directory;
 			return data;
@@ -134,15 +136,15 @@ export class FilesPanel {
 		if (this.is_root) { this.setDrivePath(); }
 		//DETERMINE IF WE ARE IN THE ROOT DIRECTORY
 		if (data.current_path == "/") {
+			this.hdr_btns.all = 'hide'
 			this.nav.up_level = 'hide';
 			this.is_root = true;
 		} else {
+			this.hdr_btns.all = 'show'
 			this.nav.up_level = 'show';
 			this.is_root = false;
 		}
-		//REGISTER DRAG AND DROP AFTER DOM LOADS
 		setTimeout(() => {
-			this.register_drag_drop();
 			this.show_files();
 		}, 500);
 		return data;
@@ -179,67 +181,64 @@ export class FilesPanel {
 		this.renderDirectory(this.buildDirectory(data));
 	}
 
-	register_drag_drop(): void {
-		var move = (from: string, to: string, is_folder: boolean) => {
-			this.move_object(from, to, is_folder);
-		}
-		//remove draggable references on root level
-		if (this.is_root) {
-			if (this.draggable_loaded) {
-				$(".drag_me").draggable('disable');
-			}
-			return;
-		}
-		$(".drag_me").draggable({revert: true});
-		$(".drop_here").droppable({
-			classes: {
-				"ui-droppable-active": "ui-state-active",
-				"ui-droppable-hover": "ui-state-hover"
-			},
-			drop: function(event, ui) {
-				var from = $(".hidden_input", ui.draggable).val();
-				var to = $(".hidden_input", this).val();
-				var is_folder = $(ui.draggable).attr('block-type') == 'folder';
-				move(from, to, is_folder);
-			}
-		});
-		this.draggable_loaded = true;
-		if (this.is_first_level()) {
-			$('.drop_here[cs-flag="up_level"]').droppable("option", "disabled", true)
-		}
-	}
-
-	is_first_level = (): boolean => {
-		var tmp = this.current_path.split('/');
-		tmp.pop();
+	get_subpath(curr_path) {
+		var tmp = curr_path.split('/');
 		tmp = tmp.filter((val) => {return val != "";});
-		return tmp.length == 0;
+		if (tmp.length > 1) {
+			return tmp.slice(1).reduce(this.reduce_path, '');
+		} else {
+			return "/";
+		}
 	}
 
 	//File Processing Algorithms
-	move_object(obj: string, folder: string, is_folder: boolean): void {
-		this.show_loader();
-		var old_path = this.current_path + '/' + obj;
-		var dest;
-		if (folder == "...") {
-			var tmp = this.current_path.split('/');
-			tmp.pop();
-			tmp = tmp.filter((val) => {return val != "";});
-			dest = tmp.reduce(this.reduce_path, '');
-			dest += ("/" + obj);
-		} else {
-			dest = this.current_path + "/" + folder + "/" + obj;
-		}
-		var data = {
-			data: { old_name: old_path, new_name: dest },
-			url: '/api/files/mod/rename',
-			type: 'POST'
-		};
+	copy_files = (): void => {
+		this.session.runtime['clipboard'] = this.selected_objects;
+		this.fn.ea.publish('react', { event_name: 'displayToast', data: 'Files Copied' });
+	}
+
+	paste_files = (): void => {
+		var data = {};
 		this.fn.fn_Ajax(data)
 			.then(this.loadAllData)
 			.catch((err) => {
 				console.log(err.responseText);
 				this.show_files();
+			});
+	}
+
+	click_upload_btn = () => {
+		$('#upload-input').click();
+	}
+
+	upload_files_selected() {
+		var files = (<HTMLInputElement>$('#upload-input').get(0)).files;
+		if (files.length > 0) {
+		  	var formData = new FormData();
+		  	for (var i = 0; i < files.length; i++) {
+			  	var file = files[i];
+			  	formData.append('uploads[]', file, file.name);
+		  	}
+		  	this.upload(formData);
+		}
+	}
+
+	upload(formData: FormData) {
+		var data = {
+			url: '/api/files/upload',
+			type: 'POST',
+			headers: {
+				'x-path': this.get_subpath(this.current_path),
+				'x-drive': this.current_drive
+			},
+			data: formData,
+			processData: false,
+			contentType: false
+		}
+		this.fn.fn_Ajax(data)
+			.then((rslt) => {
+				var test = rslt;
+				//this.getFiles();
 			});
 	}
 
@@ -264,21 +263,21 @@ export class FilesPanel {
 				select = true;
 			}
 		}
-		var count = this.set_button_status();
 		var fetch_obj;
 		if (type == "file") {
 			fetch_obj = this.visible_files;
 		} else {
 			fetch_obj = this.visible_folders;
 		}
+		var count = this.set_button_status();
 		if (count == 0) {
 			this.selected_objects = [];
-		} else if (count == 1) {elem
+		} else if (count == 1) {
 			this.selected_objects = [];
-			this.selected_objects.push(fetch_obj[index]);
+			this.selected_objects.push({name: fetch_obj[index], type: type});
 		} else {
 			if (select) {
-				this.selected_objects.push(fetch_obj[index]);
+				this.selected_objects.push({name: fetch_obj[index], type: type});
 			} else {
 				var name = fetch_obj[index];
 				var i = this.selected_objects.indexOf(name);
@@ -348,8 +347,7 @@ export class FilesPanel {
 	}
 
 	selectFolder(index: number) {
-		index++;
-		var elem = $($('.icon-block[block-type="folder"]')[index]);
+		var elem = $($('.icon-block[block-type="folder"]')[index + 1]);
 		this.select_block(elem, index, 'folder');
 	}
 

@@ -1,6 +1,10 @@
 var express = require('express');
 var ls = require('cs-file-tree');
+var fs_old = require('fs');
+var exp_path = require('path');
 var __ = require('underscore');
+var formidable = require('formidable');
+var dbcontext = require('../jsdb/data_model').data_context;
 
 module.exports.get_list = function(drives) {
 	return new Promise((res, error) => {
@@ -61,6 +65,40 @@ module.exports.get_object = function(drives) {
 			}
 		}
 	});
+}
+
+module.exports.upload_files = function(form_data, dir, callback) {
+	var form = new formidable.IncomingForm();
+	form.multiples = true;
+	form.uploadDir = dir;
+	var errs = [];
+	var new_files = [];
+
+	form.on('file', function(field, file) {
+		fs_old.rename(file.path, exp_path.join(form.uploadDir, file.name));
+		new_files.push(file.name);
+	});
+
+	form.on('error', function(err) {
+		console.log('An error has occured: \n' + err);
+		errs.push(err);
+	});
+
+	form.on('end', function() {
+		if (errs.length > 0) {
+			callback(errs);
+		} else {
+			callback(null, new_files);
+		}
+	});
+
+	form.parse(form_data);
+}
+
+module.exports.build_manager = {
+	insert: function() {
+		
+	}
 }
 
 function reduce_path(a, b) {return a + '/' + b;};

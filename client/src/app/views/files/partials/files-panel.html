@@ -3,7 +3,9 @@
     <require from="../../../attributes/dbl-click"></require>
     <require from="../../../attributes/one-click"></require>
 	<div class="row show_on_mobile">
-		<div style="float: right; margin: 0px 20px 15px 0px;">
+		<div style="float: right; margin: 0px 20px 15px 0px;" toggle-me.two-way="hdr_btns.all">
+            <i class="fa fa-copy panel-hdr-btn copy_btn" toggle-me.two-way="hdr_btns.select_all"
+				click.delegate="copy_files()"></i>
 			<i class="fa fa-times panel-hdr-btn delete_btn" toggle-me.two-way="hdr_btns.select_all"
 				click.delegate="delete_files()"></i>
 			<i class="fa fa-download panel-hdr-btn download_btn"
@@ -26,14 +28,18 @@
                         <h3 if.bind="display_path != ''" class="panel-title">${display_path}</h3>
 					</div>
 					<div class="show_on_monitor" style="display: inline-block; float: right;">
-						<i class="fa fa-times panel-hdr-btn delete_btn" toggle-me.two-way="hdr_btns.select_all"
-							click.delegate="delete_files()"></i>
-						<i class="fa fa-download panel-hdr-btn download_btn"
-							toggle-me.two-way="hdr_btns.select_single" click.delegate="download_file()"></i>
-						<i class="fa fa-pencil panel-hdr-btn edit_btn" toggle-me.two-way="hdr_btns.select_single"
-							click.delegate="open_rename_modal()"></i>
-						<i class="fa fa-plus panel-hdr-btn new_folder_btn" click.delegate="open_add_folder()"></i>
-						<i class="fa fa-upload panel-hdr-btn upload_btn" click.delegate="click_upload_btn()"></i>
+                        <div toggle-me.two-way="hdr_btns.all">
+                            <i class="fa fa-copy panel-hdr-btn copy_btn" toggle-me.two-way="hdr_btns.select_all"
+    							click.delegate="copy_files()"></i>
+    						<i class="fa fa-times panel-hdr-btn delete_btn" toggle-me.two-way="hdr_btns.select_all"
+    							click.delegate="delete_files()"></i>
+    						<i class="fa fa-download panel-hdr-btn download_btn"
+    							toggle-me.two-way="hdr_btns.select_single" click.delegate="download_file()"></i>
+    						<i class="fa fa-pencil panel-hdr-btn edit_btn" toggle-me.two-way="hdr_btns.select_single"
+    							click.delegate="open_rename_modal()"></i>
+    						<i class="fa fa-plus panel-hdr-btn new_folder_btn" click.delegate="open_add_folder()"></i>
+    						<i class="fa fa-upload panel-hdr-btn upload_btn" click.delegate="click_upload_btn()"></i>
+                        </div>
 					</div>
 				</div>
 				<input id="upload-input" type="file" name="uploads[]" multiple="multiple" style="display: none;">
