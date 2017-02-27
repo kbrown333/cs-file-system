@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cloudspire/cs-file-system.git"
+    "url": "git+https://github.com/kbrown333/cs-file-system.git"
   },
   "author": "Kyle Brown",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cloudspire/cs-file-system/issues"
+    "url": "https://github.com/kbrown333/cs-file-system/issues"
   },
-  "homepage": "https://github.com/cloudspire/cs-file-system#readme",
+  "homepage": "https://github.com/kbrown333/cs-file-system#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
     "clone": "^2.1.0",
@@ -25,6 +25,7 @@
     "debug": "^2.2.0",
     "ejs": "^2.5.5",
     "express": "^4.14.0",
+    "extend": "^3.0.0",
     "formidable": "^1.0.17",
     "fs": "0.0.1-security",
     "fs-extra": "^1.0.0",

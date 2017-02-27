@@ -5,6 +5,7 @@ var exp_path = require('path');
 var __ = require('underscore');
 var formidable = require('formidable');
 var dbcontext = require('../jsdb/data_model').data_context;
+var _extend = require('extend');
 
 module.exports.get_list = function(drives) {
 	return new Promise((res, error) => {
@@ -96,9 +97,32 @@ module.exports.upload_files = function(form_data, dir, callback) {
 }
 
 module.exports.build_manager = {
-	insert: function() {
-		
+	insert: function(drive, obj, path, files) {
+		try {
+			var cache = dbcontext.svr_config.get_key('cache') == 'on';
+			var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
+			if (cache && cache_loaded) {
+				add_files_to_dir(obj, path, files);
+				dbcontext.build.set_key(drive, obj);
+			}
+		} catch(ex) {
+			console.dir(ex);
+		}
 	}
 }
 
 function reduce_path(a, b) {return a + '/' + b;};
+
+function add_files_to_dir(obj, path, files) {
+	if (path == '/') {
+		return obj;
+	}
+	var tmp = path.split('/').filter((val) => {return val != "";});
+	var dir = obj;
+	var path;
+	for (var i = 0; i < tmp.length; i++) {
+		path = tmp[i];
+		dir = dir[path];
+	}
+	dir['_files_'] = dir['_files_'].concat(files);
+}

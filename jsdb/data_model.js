@@ -36,6 +36,23 @@ module.exports.data_context = {
 		get: function() {
 			return get_data('files', '/build');
 		},
+		get_key: function(key) {
+			var data = get_data('files', '/build');
+			if (data != null) {
+				return data[key];
+			} else {
+				return null;
+			}
+		},
+		set_key: function(key, obj) {
+			var data = get_data('files', '/build');
+			if (data != null) {
+				data[key] = obj;
+				apply_changes('files', '/build', data);
+			} else {
+				return null;
+			}
+		},
 		update: function(data) {
 			apply_changes('files', '/build', data);
 		}

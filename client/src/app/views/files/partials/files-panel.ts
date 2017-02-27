@@ -236,10 +236,7 @@ export class FilesPanel {
 			contentType: false
 		}
 		this.fn.fn_Ajax(data)
-			.then((rslt) => {
-				var test = rslt;
-				//this.getFiles();
-			});
+			.then(this.loadAllData);
 	}
 
 	//Folder / File Selection

@@ -240,9 +240,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                         contentType: false
                     };
                     this.fn.fn_Ajax(data)
-                        .then((rslt) => {
-                        var test = rslt;
-                    });
+                        .then(this.loadAllData);
                 }
                 select_block(elem, index, type) {
                     var select;

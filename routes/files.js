@@ -4,6 +4,53 @@ var csfs = require("../controllers/file_system");
 var dbcontext = require('../jsdb/data_model').data_context;
 
 router.get('/', function(req, res) {
+	return_files(res);
+});
+
+router.get('/build', function(req, res) {
+	return_build(res);
+});
+
+router.post('/upload', function(req, res) {
+	var add_path = req.headers['x-path'];
+	var drive_name = req.headers['x-drive'];
+	if (add_path == null || drive_name == null) {
+		res.status(500).send('Missing path / drive parameter(s)');
+		return;
+	}
+	var drive = get_drive_by_name(drive_name);
+	if (drive == null) {
+		res.status(500).send('Invalid drive name');
+		return;
+	}
+	var path = drive.path + add_path + (add_path == '/' ? '' : '/');
+	csfs.upload_files(req, path, function(err, rslt) {
+		if (err) {
+			console.dir(err);
+			res.status(500).send('Error uploading files');
+		} else {
+			var build = dbcontext.build.get_key(drive.name);
+			csfs.build_manager.insert(drive.name, build, add_path, rslt);
+			return_build(res);
+		}
+	});
+});
+
+router.all('/mod/*', function(req, res, next) {
+	console.log('testing');
+	next();
+});
+
+router.post('/mod/rename', function(req, res) {
+	console.dir(req.body);
+	res.json({});
+});
+
+module.exports = router;
+
+//PRIVATE METHODS
+
+function return_files(res) {
 	var cache = dbcontext.svr_config.get_key('cache') == 'on';
 	var cache_loaded = dbcontext.svr_config.get_key('files_cached') == 'true'
 	if (cache && cache_loaded) {
@@ -19,9 +66,9 @@ router.get('/', function(req, res) {
 				res.status(500).send('Error retreiving files.')
 			});
 	}
-});
+}
 
-router.get('/build', function(req, res) {
+function return_build(res) {
 	var cache = dbcontext.svr_config.get_key('cache') == 'on';
 	var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
 	if (cache && cache_loaded) {
@@ -37,42 +84,7 @@ router.get('/build', function(req, res) {
 				res.status(500).send('Error retreiving files.')
 			});
 	}
-});
-
-router.post('/upload', function(req, res) {
-	var add_path = req.headers['x-path'];
-	var drive_name = req.headers['x-drive'];
-	if (add_path == null || drive_name == null) {
-		res.status(500).send('Missing path / drive parameter(s)');
-	} else {
-		var drive = get_drive_by_name(drive_name);
-		if (drive != null) {
-			var path = drive.path + add_path + (add_path == '/' ? '' : '/');
-			csfs.upload_files(req, path, function(err, rslt) {
-				if (err) {
-					console.dir(err);
-					res.status(500).send('Error uploading files');
-				} else {
-					res.status(200).send('Success');
-				}
-			});
-		} else {
-			res.status(500).send('Invalid drive name');
-		}
-	}
-});
-
-router.all('/mod/*', function(req, res, next) {
-	console.log('testing');
-	next();
-});
-
-router.post('/mod/rename', function(req, res) {
-	console.dir(req.body);
-	res.json({});
-});
-
-module.exports = router;
+}
 
 function cache_files(data) {
 	return new Promise((res, err) => {
