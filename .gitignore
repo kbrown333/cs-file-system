@@ -38,5 +38,3 @@ client/node_modules
 client/node_modules/*
 client/src/jspm_packages
 client/src/jspm_packages/*
-client/typings
-client/typings/*
