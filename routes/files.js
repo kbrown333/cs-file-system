@@ -41,9 +41,26 @@ router.all('/mod/*', function(req, res, next) {
 	next();
 });
 
-router.post('/mod/rename', function(req, res) {
-	console.dir(req.body);
-	res.json({});
+router.post('/mod/copy', function(req, res) {
+	//console.dir(req.body);
+	var from_drive = get_drive_by_name(req.body.from_drive);
+	var to_drive = get_drive_by_name(req.body.to_drive);
+	if (from_drive ==null || to_drive == null) {
+		res.status(500).send('Drive(s) not found');
+		return;
+	}
+	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
+	var to_path = to_drive.path + (req.body.to_path == '/' ? '/' : (req.body.to_path + '/'));
+	//console.log(from_path + ': ' + to_path);
+	csfs.copy_files(to_drive, from_path, to_path, req.body.contents)
+		.then((rslt) => {
+			var build = dbcontext.build.get_key(to_drive.name);
+			csfs.build_manager.update_folder(to_drive, build, to_path, req.body.to_path)
+				.then(() => {return_build(res)});
+		})
+		.catch((err) => {
+			res.status(500).send('Error copying files, please try again.');
+		});
 });
 
 module.exports = router;

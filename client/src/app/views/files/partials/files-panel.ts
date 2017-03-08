@@ -193,18 +193,54 @@ export class FilesPanel {
 
 	//File Processing Algorithms
 	copy_files = (): void => {
-		this.session.runtime['clipboard'] = this.selected_objects;
+		this.session.runtime['clipboard'] = {
+			data: this.selected_objects,
+			path: this.get_subpath(this.current_path),
+			drive: this.current_drive,
+			type: 'cut'
+		};
 		this.fn.ea.publish('react', { event_name: 'displayToast', data: 'Files Copied' });
 	}
 
 	paste_files = (): void => {
-		var data = {};
+		var clip = this.session.runtime['clipboard'];
+		if (clip == null) { return; }
+		var subpath = this.get_subpath(this.current_path);
+		if (clip.path == subpath && clip.drive == this.current_drive) {
+			return;
+		}
+		if (!this.validateCopy(clip, clip.path, subpath, clip.drive, this.current_drive)) {
+			alert('Cannot copy a folder to one of its subdirectories.');
+			return;
+		}
+		var data = {
+			url: '/api/files/mod/copy',
+			type: 'POST',
+			data: {
+				contents: JSON.stringify(clip.data),
+				from_drive: clip.drive,
+				from_path: clip.path,
+				to_drive: this.current_drive,
+				to_path: subpath
+			}
+		};
 		this.fn.fn_Ajax(data)
 			.then(this.loadAllData)
 			.catch((err) => {
 				console.log(err.responseText);
 				this.show_files();
 			});
+	}
+
+	validateCopy(clip, from_path, to_path, from_drive, to_drive): boolean {
+		var folders = clip.data.filter((val) => {return val.type == 'folder';});
+		if (folders.length == 0) {
+			return true;
+		}
+		if (from_drive == to_drive && to_path.includes(from_path)) {
+			return false;
+		}
+		return true;
 	}
 
 	click_upload_btn = () => {

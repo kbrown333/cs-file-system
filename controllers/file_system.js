@@ -1,6 +1,7 @@
 var express = require('express');
 var ls = require('cs-file-tree');
 var fs_old = require('fs');
+var fs = require('fs-extra');
 var exp_path = require('path');
 var __ = require('underscore');
 var formidable = require('formidable');
@@ -96,33 +97,85 @@ module.exports.upload_files = function(form_data, dir, callback) {
 	form.parse(form_data);
 }
 
+module.exports.copy_files = function(to_drive, from_dir, to_dir, obj) {
+	console.log(obj);
+	return new Promise((res, error) => {
+		var data;
+		try {
+			data = JSON.parse(obj);
+		} catch(ex) {
+			error(ex);
+		}
+		if (data.length == null) {
+			error('Objects array is empty'); return;
+		}
+		var finished = __.after(data.length, function() {
+			res();
+		})
+		for (var i = 0; i < data.length; i++) {
+			fs.copy(from_dir + data[i].name, to_dir + data[i].name, (err) => {
+				if (err) { console.dir(err); }
+				finished();
+			});
+		}
+	});
+}
+
 module.exports.build_manager = {
-	insert: function(drive, obj, path, files) {
+	insert: function(drive, obj, path, files, folders) {
 		try {
 			var cache = dbcontext.svr_config.get_key('cache') == 'on';
 			var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
 			if (cache && cache_loaded) {
-				add_files_to_dir(obj, path, files);
+				add_files_to_dir(obj, path, files, folders);
 				dbcontext.build.set_key(drive, obj);
 			}
 		} catch(ex) {
 			console.dir(ex);
 		}
+	},
+	update_folder: function(drive, build, start, path) {
+		console.log('testing123')
+		return new Promise((res, error) => {
+			try {
+				var cache = dbcontext.svr_config.get_key('cache') == 'on';
+				var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
+				if (cache && cache_loaded) {
+					ls.getObject(start, function(err, tree) {
+						if (err) { error(tree); return; }
+						update_specific_directory(build, path, tree);
+						dbcontext.build.set_key(drive.name, build);
+						res();
+					});
+				}
+			} catch(ex) {
+				console.dir(ex);
+			}
+		});
 	}
 }
 
 function reduce_path(a, b) {return a + '/' + b;};
 
-function add_files_to_dir(obj, path, files) {
-	if (path == '/') {
-		return obj;
-	}
+function add_files_to_dir(obj, path, files, folders) {
+	var dir = get_specific_directory(obj, path);
+	dir['_files_'] = dir['_files_'].concat(files);
+}
+
+function update_specific_directory(obj, path, content) {
+	var dir = get_specific_directory(obj, path);
+	dir['_files_'] = content['_files_'];
+	Object.keys(content).forEach(function(k) {
+		dir[k] = content[k];
+	});
+}
+
+function get_specific_directory(obj, path) {
 	var tmp = path.split('/').filter((val) => {return val != "";});
-	var dir = obj;
-	var path;
+	var dir = obj, path;
 	for (var i = 0; i < tmp.length; i++) {
 		path = tmp[i];
 		dir = dir[path];
 	}
-	dir['_files_'] = dir['_files_'].concat(files);
+	return dir;
 }

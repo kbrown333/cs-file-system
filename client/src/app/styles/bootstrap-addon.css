@@ -168,6 +168,9 @@ i.copy_btn {
     background-color: blue;
     color: white;
 }
+i.paste_btn {
+    background-color: #668fac;
+}
 .hidden_input {
     display: none;
 }
