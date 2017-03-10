@@ -121,6 +121,29 @@ module.exports.copy_files = function(to_drive, from_dir, to_dir, obj) {
 	});
 }
 
+module.exports.delete_files = function(from_dir, obj) {
+	return new Promise((res, error) => {
+		var data;
+		try {
+			data = JSON.parse(obj);
+		} catch(ex) {
+			error(ex);
+		}
+		if (data.length == null) {
+			error('Objects array is empty'); return;
+		}
+		var finished = __.after(data.length, function() {
+			res();
+		})
+		for (var i = 0; i < data.length; i++) {
+			fs.remove(from_dir + data[i].name, (err) => {
+				if (err) { console.dir(err); }
+				finished();
+			});
+		}
+	});
+}
+
 module.exports.build_manager = {
 	insert: function(drive, obj, path, files, folders) {
 		try {
@@ -134,14 +157,13 @@ module.exports.build_manager = {
 			console.dir(ex);
 		}
 	},
-	update_folder: function(drive, build, start, path) {
-		console.log('testing123')
+	update_folder: function(drive, build, upd_folder, path) {
 		return new Promise((res, error) => {
 			try {
 				var cache = dbcontext.svr_config.get_key('cache') == 'on';
 				var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
 				if (cache && cache_loaded) {
-					ls.getObject(start, function(err, tree) {
+					ls.getObject(upd_folder, function(err, tree) {
 						if (err) { error(tree); return; }
 						update_specific_directory(build, path, tree);
 						dbcontext.build.set_key(drive.name, build);
@@ -166,7 +188,13 @@ function update_specific_directory(obj, path, content) {
 	var dir = get_specific_directory(obj, path);
 	dir['_files_'] = content['_files_'];
 	Object.keys(content).forEach(function(k) {
-		dir[k] = content[k];
+		if (k != '_files_')
+			dir[k] = content[k];
+	});
+	Object.keys(dir).forEach(function(k) {
+		if (content[k] == null) {
+			delete dir[k];
+		}
 	});
 }
 

@@ -275,6 +275,24 @@ export class FilesPanel {
 			.then(this.loadAllData);
 	}
 
+	delete_files = () => {
+		var data = {
+			url: '/api/files/mod/delete',
+			type: 'POST',
+			data: {
+				contents: JSON.stringify(this.selected_objects),
+				from_path: this.get_subpath(this.current_path),
+				from_drive: this.current_drive
+			}
+		};
+		this.fn.fn_Ajax(data)
+			.then(this.loadAllData)
+			.catch((err) => {
+				console.log(err.responseText);
+				this.show_files();
+			});
+	}
+
 	//Folder / File Selection
 	select_block(elem: any, index: number, type: string): void {
 		var select;
