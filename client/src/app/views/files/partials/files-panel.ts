@@ -293,6 +293,17 @@ export class FilesPanel {
 			});
 	}
 
+	download_file = () => {
+		var items = this.selected_objects;
+		if (items.length > 1) {
+			alert('Only 1 file at a time allowed for downloads');
+		}
+		var rt = this.get_subpath(this.current_path);
+		if (rt != '/') rt += '/';
+		var file = rt + items[0].name;
+		window.open('/api/files/download?drive=' + this.current_drive + '&file=' + file);
+	}
+
 	//Folder / File Selection
 	select_block(elem: any, index: number, type: string): void {
 		var select;

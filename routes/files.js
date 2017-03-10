@@ -36,6 +36,27 @@ router.post('/upload', function(req, res) {
 	});
 });
 
+router.get('/download', function(req, res) {
+	try {
+		var drive = get_drive_by_name(req.query.drive);
+		var fname = req.query.file;
+		if (drive == null) {
+			res.status(500).send('Drive not found');
+			return;
+		}
+		if (fname == null) {
+			res.status(500).send('File not found');
+			return;
+		}
+		var file = drive.path + fname;
+		console.log(file);
+		res.download(file);
+	} catch (ex) {
+		console.log(ex);
+		res.status(500).send('Error downloading file');
+	}
+});
+
 router.all('/mod/*', function(req, res, next) {
 	console.log('testing');
 	next();
