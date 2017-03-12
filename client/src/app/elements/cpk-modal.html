@@ -1,0 +1,23 @@
+<template>
+	<div class="${guid}">
+		<div class="cpk-modal ${modal}" style="display: none;">
+			<div class="modal-dialog" css.bind="width">
+				<div class="modal-header">
+					${modal_data.content.title}
+				</div>
+				<div class="modal-body">
+					<compose view-model="${view}" model.two-way="modal_obj"></compose>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-danger" click.delegate="close_modal()">
+						Cancel
+					</button>
+					<button class="btn btn-primary" click.delegate="apply_changes()">
+						Apply
+					</div>
+				</div>
+			</div>
+			<div class="modal-back" style="display: none;"></div>
+		</div>
+	</div>
+</template>

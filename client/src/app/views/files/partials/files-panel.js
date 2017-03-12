@@ -166,6 +166,48 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                         var file = rt + items[0].name;
                         window.open('/api/files/download?drive=' + this.current_drive + '&file=' + file);
                     };
+                    this.open_add_folder = () => {
+                        this.fn.ea.publish('react', {
+                            event_name: 'showModal',
+                            data: {
+                                modal: 'add_folder',
+                                content: {
+                                    title: 'Add New Folder',
+                                    fname: ''
+                                }
+                            }
+                        });
+                    };
+                    this.open_rename_modal = () => {
+                        this.fn.ea.publish('react', {
+                            event_name: 'showModal',
+                            data: {
+                                modal: 'edit_fname',
+                                content: {
+                                    title: 'Edit File Name',
+                                    fname: this.selected_objects[0].name
+                                }
+                            }
+                        });
+                    };
+                    this.rename_file = (old_name, new_name) => {
+                        var data = {
+                            type: 'POST',
+                            url: '/api/files/mod/rename',
+                            data: {
+                                old_name: old_name,
+                                new_name: new_name,
+                                from_path: this.get_subpath(this.current_path),
+                                from_drive: this.current_drive
+                            }
+                        };
+                        this.fn.fn_Ajax(data)
+                            .then(this.loadAllData)
+                            .catch((err) => {
+                            console.log(err.responseText);
+                            this.show_files();
+                        });
+                    };
                 }
                 attached() {
                     this.getFiles();
@@ -307,6 +349,23 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                     this.fn.fn_Ajax(data)
                         .then(this.loadAllData);
                 }
+                add_new_folder(folder_name) {
+                    var data = {
+                        type: 'POST',
+                        url: '/api/files/mod/new_folder',
+                        data: {
+                            folder_name: folder_name,
+                            from_path: this.get_subpath(this.current_path),
+                            from_drive: this.current_drive
+                        }
+                    };
+                    this.fn.fn_Ajax(data)
+                        .then(this.loadAllData)
+                        .catch((err) => {
+                        console.log(err.responseText);
+                        this.show_files();
+                    });
+                }
                 select_block(elem, index, type) {
                     var select;
                     if (this.cntl_enabled) {
@@ -426,6 +485,16 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 selectFile(index) {
                     var elem = $($('.icon-block[block-type="file"]')[index]);
                     this.select_block(elem, index, 'file');
+                }
+                onModalClose(data) {
+                    switch (data.modal) {
+                        case 'edit_fname':
+                            this.rename_file(this.selected_objects[0].name, data.content.fname);
+                            break;
+                        case 'add_folder':
+                            this.add_new_folder(data.content.fname);
+                            break;
+                    }
                 }
             };
             FilesPanel = __decorate([

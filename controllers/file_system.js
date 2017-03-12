@@ -144,6 +144,28 @@ module.exports.delete_files = function(from_dir, obj) {
 	});
 }
 
+module.exports.create_folder = function(absolute_path) {
+	return new Promise((res, error) => {
+		fs_old.mkdir(absolute_path, function(err) {
+			if (err) {
+				error(err); return;
+			}
+			res();
+		});
+	});
+}
+
+module.exports.rename_file = function(old_path, new_path) {
+	return new Promise((res, error) => {
+		fs.move(old_path, new_path, function(err) {
+			if (err) {
+				error(err); return;
+			}
+			res();
+		});
+	});
+}
+
 module.exports.build_manager = {
 	insert: function(drive, obj, path, files, folders) {
 		try {
@@ -174,6 +196,36 @@ module.exports.build_manager = {
 				console.dir(ex);
 			}
 		});
+	},
+	insert_folder: function(drive, build, path, fname) {
+		return new Promise((res, error) => {
+			try {
+				var cache = dbcontext.svr_config.get_key('cache') == 'on';
+				var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
+				if (cache && cache_loaded) {
+					insert_folder(build, path, fname);
+					dbcontext.build.set_key(drive.name, build);
+					res();
+				}
+			} catch(ex) {
+				console.dir(ex);
+			}
+		});
+	},
+	rename_file: function(drive, build, path, old_name, new_name) {
+		return new Promise((res, error) => {
+			try {
+				var cache = dbcontext.svr_config.get_key('cache') == 'on';
+				var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
+				if (cache && cache_loaded) {
+					rename_file(build, path, old_name, new_name);
+					dbcontext.build.set_key(drive.name, build);
+					res();
+				}
+			} catch(ex) {
+				console.dir(ex);
+			}
+		});
 	}
 }
 
@@ -196,6 +248,20 @@ function update_specific_directory(obj, path, content) {
 			delete dir[k];
 		}
 	});
+}
+
+function insert_folder(obj, path, fname) {
+	var dir = get_specific_directory(obj, path);
+	dir[fname] = {'_files_': []};
+}
+
+function rename_file(obj, path, old_name, new_name) {
+	var dir = get_specific_directory(obj, path);
+	if (dir != null && dir['_files_'] != null) {
+		var index = dir['_files_'].indexOf(old_name);
+		if (index == -1) { return; }
+		dir['_files_'][index] = new_name;
+	}
 }
 
 function get_specific_directory(obj, path) {

@@ -100,6 +100,50 @@ router.post('/mod/delete', function(req, res) {
 		});
 });
 
+router.post('/mod/new_folder', function(req, res) {
+	var from_drive = get_drive_by_name(req.body.from_drive);
+	if (from_drive ==null) {
+		res.status(500).send('Drive not found');
+		return;
+	}
+	if (req.body.folder_name == null) {
+		res.status(500).send('Invalid folder name');
+		return;
+	}
+	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
+	csfs.create_folder(from_path + req.body.folder_name)
+		.then(() => {
+			var build = dbcontext.build.get_key(from_drive.name);
+			csfs.build_manager.insert_folder(from_drive, build, req.body.from_path, req.body.folder_name)
+				.then(() => {return_build(res)});
+		})
+		.catch((err) => {
+			res.status(500).send('Error adding new folder, please try again.');
+		});
+});
+
+router.post('/mod/rename', function(req, res) {
+	var from_drive = get_drive_by_name(req.body.from_drive);
+	if (from_drive ==null) {
+		res.status(500).send('Drive not found');
+		return;
+	}
+	if (req.body.old_name == null || req.body.new_name == null) {
+		res.status(500).send('Invalid file path(s), a restart may resolve this issue.');
+		return;
+	}
+	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
+	csfs.rename_file(from_path + req.body.old_name, from_path + req.body.new_name)
+		.then(() => {
+			var build = dbcontext.build.get_key(from_drive.name);
+			csfs.build_manager.rename_file(from_drive, build, req.body.from_path, req.body.old_name, req.body.new_name)
+				.then(() => {return_build(res)});
+		})
+		.catch((err) => {
+			res.status(500).send('Error adding new folder, please try again.');
+		});
+});
+
 module.exports = router;
 
 //PRIVATE METHODS
