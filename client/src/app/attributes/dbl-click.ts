@@ -9,7 +9,7 @@ export class DblClickCustomAttribute {
 
     constructor(private element: Element, private fn: FnTs) {
         $(element).dblclick((event: JQueryEventObject) => {
-            this.fn.ea.publish('react', {event_name: this.event, data: this.data });
+            this.fn.mq.SendMessage({event_name: this.event, data: this.data });
         });
     }
 

@@ -27,10 +27,10 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     this.fn = fn;
                     $(element).click((event) => {
                         if (this.that) {
-                            this.fn.ea.publish('react', { event_name: this.event, data: { data: this.data, elem: this.element } });
+                            this.fn.mq.SendMessage({ event_name: this.event, data: { data: this.data, elem: this.element } });
                         }
                         else {
-                            this.fn.ea.publish('react', { event_name: this.event, data: this.data });
+                            this.fn.mq.SendMessage({ event_name: this.event, data: this.data });
                         }
                     });
                 }

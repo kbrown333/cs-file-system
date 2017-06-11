@@ -1,5 +1,6 @@
 import {inject, bindable, bindingMode} from 'aurelia-framework';
 import {FnTs} from '../../../models/FnTs';
+import {AggregateData} from '../../../models/message_queue';
 import {SessionData} from '../../../models/session';
 
 @bindable({name: 'current_path', defaultValue: '/'})
@@ -39,9 +40,10 @@ export class FilesPanel {
 
 	attached() {
 		this.getFiles();
-		this.app_events = this.fn.ea.subscribe('react', (event: any) => {
-			if (this[event.event_name] != null) { this[event.event_name](event.data); }
-		});
+		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
+            if (event.target != null && event.target != 'app') { return; }
+            if (this[event.event_name] != null) { this[event.event_name](event.data); }
+        });
 		this.screenResize();
 		$('body').keydown((event: JQueryEventObject) => {
 			if (event.which == 17) { this.cntl_enabled = true; }
@@ -199,7 +201,7 @@ export class FilesPanel {
 			drive: this.current_drive,
 			type: 'cut'
 		};
-		this.fn.ea.publish('react', { event_name: 'displayToast', data: 'Files Copied' });
+		this.fn.mq.SendMessage({ event_name: 'displayToast', target: 'app', data: 'Files Copied' });
 	}
 
 	paste_files = (): void => {
@@ -305,7 +307,7 @@ export class FilesPanel {
 	}
 
 	open_add_folder = () => {
-		this.fn.ea.publish('react', {
+		this.fn.mq.SendMessage({
 			event_name: 'showModal',
 			data: {
 				modal: 'add_folder',
@@ -336,7 +338,7 @@ export class FilesPanel {
 	}
 
 	open_rename_modal = () => {
-		this.fn.ea.publish('react', {
+		this.fn.mq.SendMessage({
 			event_name: 'showModal',
 			data: {
 				modal: 'edit_fname',
@@ -438,7 +440,7 @@ export class FilesPanel {
 
 	loadPage(page: string) {
 		this.current_path = '/' + page;
-		this.fn.ea.publish('react', {event_name: 'toggle_aside'});
+		this.fn.mq.SendMessage({event_name: 'toggle_aside'});
 		var data = { files: this.files };
 		this.startRender(data);
 	}
@@ -468,7 +470,7 @@ export class FilesPanel {
 				path: this.current_path + '/',
 				original: file
 		};
-		this.fn.ea.publish('react', {event_name: event, data: data});
+		this.fn.mq.SendMessage({event_name: event, data: data});
 	}
 
 	selectFolder(index: number) {

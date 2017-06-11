@@ -1,4 +1,4 @@
-System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exports_1, context_1) {
+System.register(["aurelia-framework", "aurelia-event-aggregator", "./message_queue"], function (exports_1, context_1) {
     "use strict";
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -10,7 +10,7 @@ System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exp
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
     var __moduleName = context_1 && context_1.id;
-    var aurelia_framework_1, aurelia_event_aggregator_1, FnTs;
+    var aurelia_framework_1, aurelia_event_aggregator_1, message_queue_1, FnTs;
     return {
         setters: [
             function (aurelia_framework_1_1) {
@@ -18,14 +18,17 @@ System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exp
             },
             function (aurelia_event_aggregator_1_1) {
                 aurelia_event_aggregator_1 = aurelia_event_aggregator_1_1;
+            },
+            function (message_queue_1_1) {
+                message_queue_1 = message_queue_1_1;
             }
         ],
         execute: function () {
             FnTs = class FnTs {
-                constructor(ea) {
+                constructor(ea, mq) {
                     this.ea = ea;
+                    this.mq = mq;
                 }
-                //public members
                 fn_Parallel(args) {
                     return new Promise((res, err) => {
                         var data = [];
@@ -85,7 +88,6 @@ System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exp
                     });
                 }
                 fn_FindByKey(array, key, type = "dfs") {
-                    //'type' variable should be either dfs (depth first, default) or bfs (breadth first)
                     return new Promise((res, err) => {
                         if (type == "bfs") {
                             var rslt = this.BfsByKey(array, key);
@@ -97,7 +99,6 @@ System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exp
                         }
                     });
                 }
-                //output functions - useful for quick error handlers
                 logText(msg) {
                     return new Promise((res) => {
                         console.log(msg);
@@ -116,7 +117,6 @@ System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exp
                         res(err);
                     });
                 }
-                // internal functions
                 afterSeries(times, func) {
                     return () => {
                         if (--times < 1) {
@@ -218,8 +218,8 @@ System.register(["aurelia-framework", "aurelia-event-aggregator"], function (exp
                 }
             };
             FnTs = __decorate([
-                aurelia_framework_1.inject(aurelia_event_aggregator_1.EventAggregator),
-                __metadata("design:paramtypes", [aurelia_event_aggregator_1.EventAggregator])
+                aurelia_framework_1.inject(aurelia_event_aggregator_1.EventAggregator, message_queue_1.MessageQueue),
+                __metadata("design:paramtypes", [aurelia_event_aggregator_1.EventAggregator, message_queue_1.MessageQueue])
             ], FnTs);
             exports_1("FnTs", FnTs);
         }

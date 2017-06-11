@@ -1,5 +1,6 @@
 import {inject, bindable} from 'aurelia-framework';
 import {FnTs} from '../models/FnTs';
+import {AggregateData} from '../models/message_queue';
 
 @bindable({ name: 'modal', defaultValue: 'na' })
 @bindable({ name: 'view', defaultValue: 'na' })
@@ -22,9 +23,10 @@ export class CpkModal {
 	}
 
 	attached() {
-		this.app_events = this.fn.ea.subscribe('react', (event: any) => {
-			if (this[event.event_name] != null) { this[event.event_name](event.data); }
-		});
+		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
+            if (event.target != null && event.target != 'app') { return; }
+            if (this[event.event_name] != null) { this[event.event_name](event.data); }
+        });
 	}
 
 	detached() {
@@ -54,7 +56,7 @@ export class CpkModal {
 	}
 
 	apply_changes() {
-		this.fn.ea.publish('react', {event_name: 'onModalClose', data: this.modal_data});
+		this.fn.mq.SendMessage({event_name: 'onModalClose', data: this.modal_data});
 		this.close_modal();
 	}
 

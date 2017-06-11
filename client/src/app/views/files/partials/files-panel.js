@@ -102,7 +102,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                             drive: this.current_drive,
                             type: 'cut'
                         };
-                        this.fn.ea.publish('react', { event_name: 'displayToast', data: 'Files Copied' });
+                        this.fn.mq.SendMessage({ event_name: 'displayToast', target: 'app', data: 'Files Copied' });
                     };
                     this.paste_files = () => {
                         var clip = this.session.runtime['clipboard'];
@@ -167,7 +167,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                         window.open('/api/files/download?drive=' + this.current_drive + '&file=' + file);
                     };
                     this.open_add_folder = () => {
-                        this.fn.ea.publish('react', {
+                        this.fn.mq.SendMessage({
                             event_name: 'showModal',
                             data: {
                                 modal: 'add_folder',
@@ -179,7 +179,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                         });
                     };
                     this.open_rename_modal = () => {
-                        this.fn.ea.publish('react', {
+                        this.fn.mq.SendMessage({
                             event_name: 'showModal',
                             data: {
                                 modal: 'edit_fname',
@@ -211,7 +211,10 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 }
                 attached() {
                     this.getFiles();
-                    this.app_events = this.fn.ea.subscribe('react', (event) => {
+                    this.app_events = this.fn.mq.Subscribe((event) => {
+                        if (event.target != null && event.target != 'app') {
+                            return;
+                        }
                         if (this[event.event_name] != null) {
                             this[event.event_name](event.data);
                         }
@@ -447,7 +450,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 }
                 loadPage(page) {
                     this.current_path = '/' + page;
-                    this.fn.ea.publish('react', { event_name: 'toggle_aside' });
+                    this.fn.mq.SendMessage({ event_name: 'toggle_aside' });
                     var data = { files: this.files };
                     this.startRender(data);
                 }
@@ -476,7 +479,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                         path: this.current_path + '/',
                         original: file
                     };
-                    this.fn.ea.publish('react', { event_name: event, data: data });
+                    this.fn.mq.SendMessage({ event_name: event, data: data });
                 }
                 selectFolder(index) {
                     var elem = $($('.icon-block[block-type="folder"]')[index + 1]);

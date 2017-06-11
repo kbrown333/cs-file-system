@@ -17,19 +17,4 @@ export class Files {
 
 	}
 
-	attached() {
-		this.app_events = this.fn.ea.subscribe('react', (event: any) => {
-			if (this[event.event_name] != null) { this[event.event_name](event.data); }
-		});
-	}
-
-	detached() {
-		this.app_events.dispose();
-	}
-
-	//Event Aggregator Functions
-	screenResize(size: any = null): void {
-
-	}
-
 }

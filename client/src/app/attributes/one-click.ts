@@ -11,9 +11,9 @@ export class OneClickCustomAttribute {
     constructor(private element: Element, private fn: FnTs) {
         $(element).click((event: JQueryEventObject) => {
             if (this.that) {
-                this.fn.ea.publish('react', {event_name: this.event, data: {data: this.data, elem: this.element} });
+                this.fn.mq.SendMessage({event_name: this.event, data: {data: this.data, elem: this.element} });
             } else {
-                this.fn.ea.publish('react', {event_name: this.event, data: this.data });
+                this.fn.mq.SendMessage({event_name: this.event, data: this.data });
             }
         });
     }

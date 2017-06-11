@@ -2,6 +2,7 @@ import {inject} from "aurelia-framework";
 import {Router, RouterConfiguration} from "aurelia-router";
 import {SessionData} from './models/session';
 import {FnTs} from './models/FnTs';
+import {AggregateData} from './models/message_queue';
 
 @inject(Router, SessionData, FnTs)
 export class App {
@@ -26,7 +27,8 @@ export class App {
     }
 
     loadEventListener() {
-		this.app_events = this.fn.ea.subscribe('react', (event: any) => {
+		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
+            if (event.target != null && event.target != 'app') { return; }
             if (this[event.event_name] != null) { this[event.event_name](event.data); }
         });
     }
@@ -57,7 +59,7 @@ export class App {
                     height: $(window).height(),
                     width: $(window).width()
                 };
-                this.fn.ea.publish('react', {event_name: 'screenResize', data: data});
+                this.fn.mq.SendMessage({event_name: 'screenResize', data: data});
             }, 100);
         });
     }
@@ -71,6 +73,6 @@ export class App {
     }
 
     automate = (data: any) => {
-        this.fn.ea.publish('react', {event_name: 'receiveCommand', data: data})
+        this.fn.mq.SendMessage({event_name: 'receiveCommand', data: data})
     }
 }

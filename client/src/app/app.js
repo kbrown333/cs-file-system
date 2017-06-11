@@ -48,7 +48,7 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                         setTimeout(() => { div.className = div.className = ""; }, 3000);
                     };
                     this.automate = (data) => {
-                        this.fn.ea.publish('react', { event_name: 'receiveCommand', data: data });
+                        this.fn.mq.SendMessage({ event_name: 'receiveCommand', data: data });
                     };
                     this.loadRouter();
                     this.loadEventListener();
@@ -64,7 +64,10 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                     });
                 }
                 loadEventListener() {
-                    this.app_events = this.fn.ea.subscribe('react', (event) => {
+                    this.app_events = this.fn.mq.Subscribe((event) => {
+                        if (event.target != null && event.target != 'app') {
+                            return;
+                        }
                         if (this[event.event_name] != null) {
                             this[event.event_name](event.data);
                         }
@@ -84,7 +87,7 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                                 height: $(window).height(),
                                 width: $(window).width()
                             };
-                            this.fn.ea.publish('react', { event_name: 'screenResize', data: data });
+                            this.fn.mq.SendMessage({ event_name: 'screenResize', data: data });
                         }, 100);
                     });
                 }

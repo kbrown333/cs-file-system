@@ -35,18 +35,6 @@ System.register(["aurelia-framework", "../../models/FnTs", "../../models/session
                         { name: 'Documents', event: 'loadPage', data: 'documents' }
                     ];
                 }
-                attached() {
-                    this.app_events = this.fn.ea.subscribe('react', (event) => {
-                        if (this[event.event_name] != null) {
-                            this[event.event_name](event.data);
-                        }
-                    });
-                }
-                detached() {
-                    this.app_events.dispose();
-                }
-                screenResize(size = null) {
-                }
             };
             Files = __decorate([
                 aurelia_framework_1.inject(FnTs_1.FnTs, session_1.SessionData),

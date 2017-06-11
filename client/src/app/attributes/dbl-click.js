@@ -26,7 +26,7 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     this.element = element;
                     this.fn = fn;
                     $(element).dblclick((event) => {
-                        this.fn.ea.publish('react', { event_name: this.event, data: this.data });
+                        this.fn.mq.SendMessage({ event_name: this.event, data: this.data });
                     });
                 }
                 eventChanged(newValue, oldValue) {

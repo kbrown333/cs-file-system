@@ -1,10 +1,11 @@
 import {inject} from 'aurelia-framework';
 import { EventAggregator } from 'aurelia-event-aggregator';
+import { MessageQueue } from './message_queue';
 
-@inject(EventAggregator)
+@inject(EventAggregator, MessageQueue)
 export class FnTs {
 
-    constructor(public ea: EventAggregator) { }
+    constructor(public ea: EventAggregator, public mq: MessageQueue) { }
 
     //public members
     public fn_Parallel(args: Array<Promise<any>>): Promise<any> {
