@@ -34,6 +34,7 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     this.continuous = false;
                     this.shuffle = false;
                     this.muted = false;
+                    this.loaded = false;
                     this.toggleListView = () => {
                         if (this.visibility.player == 'show') {
                             this.visibility.player = 'hide';
@@ -272,9 +273,18 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                             var outer = $('.panel-body[panel-type="music-panel"]').height();
                             var inner = $('#music-panel').height();
                             var height = outer - inner - 40;
-                            height = Math.max(height, 150);
+                            height = Math.max(height, 340);
                             $('.loaded_songs').css('max-height', height + "px");
                         }, 50);
+                    };
+                    this.loadMusicPlayerPanel = () => {
+                        if (!this.loaded) {
+                            this.initWaveSurfer()
+                                .then(this.getMusicList)
+                                .then(this.generateBindableList)
+                                .then(this.loadMasterData)
+                                .then(this.loadPlayer);
+                        }
                     };
                     this.screenResize = (size = null) => {
                         if (this.player != null) {
@@ -313,7 +323,6 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     };
                 }
                 attached() {
-                    this.screenResize();
                     this.app_events = this.fn.mq.Subscribe((event) => {
                         if (event.target != null && event.target != 'music-player') {
                             return;
@@ -322,11 +331,6 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                             this[event.event_name](event.data);
                         }
                     });
-                    this.initWaveSurfer()
-                        .then(this.getMusicList)
-                        .then(this.generateBindableList)
-                        .then(this.loadMasterData)
-                        .then(this.loadPlayer);
                     this.getSongMap();
                 }
                 detached() {

@@ -39,6 +39,7 @@ export class App {
 
     clickOpenMusicPlayer() {
         $(".music-player-container").show();
+        this.fn.mq.SendMessage({event_name: 'loadMusicPlayerPanel', target: 'music-player'});
     }
 
     //APP EVENTS

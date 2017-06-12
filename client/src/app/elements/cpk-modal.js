@@ -36,6 +36,12 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                 detached() {
                     this.app_events.dispose();
                 }
+                activate(parent) {
+                    if (parent == null) {
+                        this.parent = parent;
+                        this.my_guid = parent.guid;
+                    }
+                }
                 generateGUID() {
                     var gen = () => {
                         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -47,6 +53,7 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     if (this.modal == data.modal) {
                         this.modal_data = data;
                         this.modal_obj = this;
+                        setTimeout(() => { this.fn.mq.SendMessage({ event_name: this.guid, data: data }); }, 10);
                         $(".cpk-modal", ('.' + this.guid)).show();
                         $(".modal-back", ('.' + this.guid)).show();
                     }

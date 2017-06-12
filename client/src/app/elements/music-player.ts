@@ -27,6 +27,7 @@ export class MusicPlayer {
 	continuous: boolean = false;
 	shuffle: boolean = false;
 	muted: boolean = false;
+	loaded: boolean = false;
 
 	constructor (private fn: FnTs) {
 		this.track_time = {
@@ -36,16 +37,10 @@ export class MusicPlayer {
 	}
 
 	attached() {
-		this.screenResize();
 		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
             if (event.target != null && event.target != 'music-player') { return; }
             if (this[event.event_name] != null) { this[event.event_name](event.data); }
         });
-		this.initWaveSurfer()
-			.then(this.getMusicList)
-			.then(this.generateBindableList)
-			.then(this.loadMasterData)
-			.then(this.loadPlayer);
 		//force update of songe list on server
 		this.getSongMap();
 	}
@@ -328,7 +323,7 @@ export class MusicPlayer {
 			var outer = $('.panel-body[panel-type="music-panel"]').height();
 			var inner = $('#music-panel').height();
 			var height = outer - inner - 40;
-			height = Math.max(height, 150);
+			height = Math.max(height, 340);
 			$('.loaded_songs').css('max-height', height + "px");
 		}, 50);
 	}
@@ -338,6 +333,16 @@ export class MusicPlayer {
 	}
 
 	//Event Aggregator Functions
+	loadMusicPlayerPanel = () => {
+		if (!this.loaded) {
+			this.initWaveSurfer()
+				.then(this.getMusicList)
+				.then(this.generateBindableList)
+				.then(this.loadMasterData)
+				.then(this.loadPlayer);
+		}
+	}
+
 	screenResize = (size: any = null): void => {
 		if (this.player != null) {
 			this.player.empty();

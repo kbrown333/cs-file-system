@@ -78,6 +78,7 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                 }
                 clickOpenMusicPlayer() {
                     $(".music-player-container").show();
+                    this.fn.mq.SendMessage({ event_name: 'loadMusicPlayerPanel', target: 'music-player' });
                 }
                 handleResize() {
                     var resizeTimeout;
