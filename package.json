@@ -30,6 +30,7 @@
     "fs": "0.0.1-security",
     "fs-extra": "^1.0.0",
     "http": "0.0.0",
+    "jsmediatags": "^3.5.0",
     "list-directory-contents": "0.0.3",
     "moment": "^2.15.1",
     "morgan": "^1.7.0",

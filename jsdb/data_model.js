@@ -13,12 +13,27 @@ module.exports.init = function() {
 	} catch (ex) {
 		global.jsdb.files.push('/build', {});
 	}
+	//MUSIC DATABASE
+	global.jsdb.music = new jsondb('jsdb/db_music', true, false);
+	try {
+		global.jsdb.music.getData('/songs');
+	} catch (ex) {
+		global.jsdb.music.push('/songs', {});
+	}
+	try {
+		global.jsdb.music.getData('/playlists');
+	} catch (ex) {
+		global.jsdb.music.push('/playlists', []);
+	}
 	//CONFIGURATION DATABASE
 	global.jsdb.config = new jsondb('jsdb/db_config', true, false);
 	try {
 		global.svr_config = global.jsdb.config.getData('/svr');
 	} catch (ex) {
-		global.jsdb.config.push('/svr', {'cache': 'on'});
+		global.jsdb.config.push('/svr', {
+			'cache': 'on',
+			'media_root': require('path').join(__dirname, '..', 'dev') + '/'
+		});
 		global.svr_config = {'cache': 'on'};
 	}
 }
@@ -80,6 +95,38 @@ module.exports.data_context = {
 		},
 		update: function(data) {
 			apply_changes('config', '/svr', data);
+		}
+	},
+	music: {
+		songs: {
+			get: function() {
+				return get_data('music', '/songs');
+			},
+			get_key: function(key) {
+				var data = get_data('music', '/songs');
+				if (data != null) {
+					return data[key];
+				} else {
+					return null;
+				}
+			},
+			set_key: function(key, obj) {
+				var data = get_data('music', '/songs');
+				if (data != null) {
+					data[key] = obj;
+					apply_changes('music', '/songs', data);
+				} else {
+					return null;
+				}
+			},
+			update: function(data) {
+				apply_changes('music', '/songs', data);
+			}
+		},
+		playlists: {
+			get: function() {
+				return get_data('music', '/playlists');
+			}
 		}
 	}
 }

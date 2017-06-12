@@ -16,6 +16,7 @@ app.set('views', path.join(__dirname, 'client/src'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html')
 app.use(express.static(path.join(__dirname, 'client/src')));
+app.use('/media', express.static(path.join(__dirname, 'dev')));
 
 //INITIALIZE JSON-DABATABSE
 require('./jsdb/data_model').init();
@@ -69,3 +70,6 @@ console.log('Application available at port: ' + app.get('port'));
 //INITIALIZE GLOBAL CACHE
 var NodeCache = require( "node-cache" );
 global.default_cache = new NodeCache();
+
+//MAP MUSIC TO DATABASE
+require('./controllers/song_map').map();
