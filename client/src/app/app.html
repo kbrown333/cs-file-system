@@ -13,9 +13,9 @@
                 <a class="navbar-brand" href="#" style="float: right; margin-right: 15px;" click.delegate="toggle_header()">
                     <i class="fa fa-bars"></i>
                 </a>
-                <!-- <a class="navbar-brand" href="#" style="float: right;">
-                    <i class="fa fa-search"></i>
-                </a> -->
+                <a class="navbar-brand" href="#" style="float: right;" click.delegate="clickOpenMusicPlayer()">
+                    <i class="fa fa-music"></i>
+                </a>
             </div>
         </div>
         <div class="collapse navbar-collapse" id="navbar">
@@ -29,15 +29,20 @@
                     <i class="fa fa-spinner fa-spin fa-2x"></i>
                 </li>
             </ul>
-            <!-- <a class="navbar-brand show_on_monitor" href="#" style="float: right; margin-right: 15px;">
-                <i class="fa fa-search"></i>
-            </a> -->
+            <a class="navbar-brand show_on_monitor" href="#" style="float: right; margin-right: 15px;"
+             click.delegate="clickOpenMusicPlayer()">
+                <i class="fa fa-music"></i>
+            </a>
         </div>
     </nav>
+    <require from="./elements/music-player"></require>
+    <music-player></music-player>
     <div class="page-host">
         <require from="./elements/cpk-modal"></require>
         <cpk-modal modal="edit_fname" view="./modal/edit-fname"></cpk-modal>
         <cpk-modal modal="add_folder" view="./modal/add-folder"></cpk-modal>
+        <cpk-modal modal="add_playlist" view="./modal/add-playlist"></cpk-modal>
+        <cpk-modal modal="select_playlist" view="./modal/select-playlist"></cpk-modal>
         <router-view class="app-content"></router-view>
     </div>
 </template>

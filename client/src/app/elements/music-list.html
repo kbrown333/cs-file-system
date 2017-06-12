@@ -1,0 +1,139 @@
+<template>
+    <require from="../attributes/toggle-me"></require>
+    <require from="../attributes/dbl-click"></require>
+    <require from="../attributes/one-click"></require>
+	<div class="list-view-header">
+		<div class="list-dir-buttons">
+			<i click.delegate="clickBack()" class="fa fa-arrow-left fa-2x" style="margin-top: 3px;"></i>
+		</div>
+		<div class="list-selected-panel">
+			<span>${view_header}</span>
+		</div>
+		<div class="list-dir-buttons">
+			<i click.delegate="clickForward()" class="fa fa-arrow-right fa-2x" style="margin-top: 3px;"></i>
+		</div>
+	</div>
+	<!-- Main Selection Screen -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.main.display">
+		<ul id="list-view-selection">
+			<li click.delegate="clickSubList('songs')"><i class="fa fa-music"></i>All Songs</li>
+			<li click.delegate="clickSubList('artists')"><i class="fa fa-user"></i>Artists</li>
+			<li click.delegate="clickSubList('albums')"><i class="fa fa-users"></i>Albums</li>
+			<li click.delegate="clickSubList('genres')"><i class="fa fa-th-list"></i>Genres</li>
+			<li click.delegate="clickSubList('playlists')"><i class="fa fa-book"></i>Playlists</li>
+		</ul>
+	</div>
+	<!-- All Songs -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.songs.display">
+		<ul class="category-list playlist-buttons">
+			<li class="playlist-header">
+				<div class="pull-right">
+					<i class="fa fa-plus" click.delegate="clickAddTrackToPlaylist()"></i>
+				</div>
+			</li>
+		</ul>
+		<ul class="category-list song-list">
+			<li repeat.for="item of master_list">
+				<div class="group-container" dbl-click="event.bind: 'sendListToPlayer'; data.bind: item;"
+					one-click="event.bind: 'clickTrack'; data.bind: item; that: true">
+					<p>${item.title}</p>
+					<p>${item.artist}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- loaded songs -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.loaded_songs.display">
+		<ul class="category-list playlist-buttons">
+			<li class="playlist-header">
+				<div class="pull-right">
+					<i class="fa fa-plus" click.delegate="clickAddTrackToPlaylist()"></i>
+				</div>
+			</li>
+		</ul>
+		<ul class="category-list song-list">
+			<li repeat.for="item of loaded_songs">
+				<div class="group-container" dbl-click="event.bind: 'sendListToPlayer'; data.bind: item;"
+					one-click="event.bind: 'clickTrack'; data.bind: item; that: true">
+					<p>${item.title}</p>
+					<p>${item.artist}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- Artists -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.artists.display">
+		<ul class="category-list">
+			<li repeat.for="item of artists" if.bind="item.name != 'Unknown' || item.array.length > 0">
+				<div class="group-container" click.delegate="loadSubGroup(item, $index)">
+					<p>${item.name}</p>
+					<p>Count: ${item.array.length}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- Albums -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.albums.display">
+		<ul class="category-list">
+			<li repeat.for="item of albums" if.bind="item.name != 'Unknown' || item.array.length > 0">
+				<div class="group-container" click.delegate="loadSubGroup(item, $index)">
+					<p>${item.name}</p>
+					<p>Count: ${item.array.length}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- Genres -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.genres.display">
+		<ul class="category-list">
+			<li repeat.for="item of genres" if.bind="item.name != 'Unknown' || item.array.length > 0">
+				<div class="group-container" click.delegate="loadSubGroup(item, $index)">
+					<p>${item.name}</p>
+					<p>Count: ${item.array.length}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- Playlists -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.playlists.display">
+		<ul class="category-list playlist-buttons">
+			<li class="playlist-header">
+				<div class="pull-right">
+					<i class="fa fa-times" toggle-me.two-way="show_delete_playlist"
+						click.delegate="clickDeletePlaylist()"></i>
+					<i class="fa fa-plus" click.delegate="clickAddPlaylist()"></i>
+				</div>
+			</li>
+		</ul>
+		<ul class="category-list playlist-data">
+			<li repeat.for="item of playlists">
+				<div class="group-container" dbl-click="event.bind: 'selectPlaylist'; data.bind: $index;"
+					one-click="event.bind: 'clickPlaylist'; data.bind: item; that: true;">
+					<p>${item.name}</p>
+					<p>Count: ${item.tracks.length}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<!-- Currently Open Playlist -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.open_playlist.display">
+		<ul class="category-list playlist-buttons">
+			<li class="playlist-header">
+				<div class="pull-right">
+					<i class="fa fa-times" toggle-me.two-way="show_delete_track"
+						click.delegate="clickDeleteTrackFromPlaylist()"></i>
+					<i class="fa fa-plus" click.delegate="clickAddTrackToPlaylist()"></i>
+				</div>
+			</li>
+		</ul>
+		<ul class="category-list playlist-data">
+			<li repeat.for="item of loaded_playlist">
+				<div class="group-container" dbl-click="event.bind: 'sendListToPlayer'; data.bind: item;"
+					one-click="event.bind: 'clickTrack'; data.bind: item; that: true;">
+					<p>${item.title}</p>
+					<p>${item.artist}</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+</template>

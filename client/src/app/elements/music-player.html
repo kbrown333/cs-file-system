@@ -1,0 +1,95 @@
+<template>
+    <require from="../attributes/toggle-me"></require>
+	<div class="music-player-container" style="display: none;">
+		<div class="panel panel-danger">
+			<div class="panel-heading">
+				<div style="display: inline-block; margin-right: 7px;">
+					<i class="fa fa-play"></i>
+				</div>
+				<div style="display: inline-block;">
+					<h3 class="panel-title">Music Player</h3>
+				</div>
+				<div style="display: inline-block; float: right; margin-left: 10px;">
+					<i id="close-music-player" class="fa fa-times" style="cursor: pointer; padding: 3px;"
+						click.delegate="closeMusicPlayer()"></i>
+				</div>
+				<div style="display: inline-block; float: right;">
+					<i id="btn-list-view" class="fa fa-list" style="cursor: pointer; padding: 3px;"
+						click.delegate="toggleListView()"></i>
+				</div>
+			</div>
+			<div class="panel-body" panel-type="music-panel">
+				<div toggle-me.two-way="visibility.player">
+					<div id="music-panel">
+						<div class="wave-functions">
+							<div class="col-xs-3">
+								<i class="fa fa-refresh" id="continue-btn" click.delegate="toggleContinuous()"></i>
+							</div>
+							<div class="col-xs-3">
+								<i class="fa fa-random" id="shuffle-btn" click.delegate="toggleShuffle()"></i>
+							</div>
+							<div class="col-xs-6" style="padding-left: 15px;">
+								<div class="col-xs-3" style="text-align: right;">
+									<i class="fa fa-volume-up icon_selected" id="vol-btn" click.delegate="toggleMute()"></i>
+								</div>
+								<div class="col-xs-9">
+									<input id="slider" type="range" min="1" max="100" value="50" />
+								</div>
+							</div>
+						</div>
+						<div class="curr-track-data">
+							<div class="now-playing">
+								<p>
+									<div style="color: red; display: inline-block; width: 42px;">Artist: </div>
+									<span style="white-space: nowrap;">${now_playing.artist}</span>
+								</p>
+								<p>
+									<div style="color: red; display: inline-block; width: 42px;">Title: </div>
+									<span style="white-space: nowrap;">${now_playing.title}</span>
+								</p>
+							</div>
+						</div>
+						<div class="wave-container">
+							<div id="waveform"></div>
+							<div class="duration-bar">
+								<div style="display: inline-block; float: left;">
+									${track_time.current}
+								</div>
+								<div style="display: inline-block; float: right;">
+									${track_time.total}
+								</div>
+							</div>
+						</div>
+						<div class="wave-footer">
+							<div class="col-xs-3">
+								<i class="fa fa-play" id="play-btn" click.delegate="play()"></i>
+							</div>
+							<div class="col-xs-3">
+								<i class="fa fa-pause" id="pause-btn" click.delegate="pause()"></i>
+							</div>
+							<div class="col-xs-3">
+								<i class="fa fa-backward" id="next-btn" click.delegate="prevSong()"></i>
+							</div>
+							<div class="col-xs-3">
+								<i class="fa fa-forward" id="prev-btn" click.delegate="nextSong()"></i>
+							</div>
+						</div>
+					</div>
+					<div class="loaded_song_container">
+						<ul class="loaded_songs">
+							<li repeat.for="song of song_list">
+								<div class="song-link" click.delegate="clickPlayTrack($index, song)">
+									${song.title} - ${song.artist}
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div toggle-me.two-way="visibility.list" style="display: none;">
+					<require from="./music-list"></require>
+					<music-list grid_data.two-way="master_list"></music-list>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

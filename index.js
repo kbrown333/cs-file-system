@@ -24,10 +24,12 @@ require('./jsdb/data_model').init();
 //Load Middleware Functions
 var mw_Index = require('./routes/static/index');
 var mw_Files = require('./routes/files');
+var mw_Music = require('./routes/music');
 
 //Route Paths to Middleware
 app.use('/', mw_Index);
 app.use('/api/files', mw_Files);
+app.use('/api/music', mw_Music);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -72,4 +74,6 @@ var NodeCache = require( "node-cache" );
 global.default_cache = new NodeCache();
 
 //MAP MUSIC TO DATABASE
-require('./controllers/song_map').map();
+require('./controllers/song_map').map(() => {
+    console.log('Songs have been mapped');
+});

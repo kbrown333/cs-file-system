@@ -41,7 +41,7 @@ export class FilesPanel {
 	attached() {
 		this.getFiles();
 		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
-            if (event.target != null && event.target != 'app') { return; }
+            if (event.target != null && event.target != 'files-panel') { return; }
             if (this[event.event_name] != null) { this[event.event_name](event.data); }
         });
 		this.screenResize();

@@ -1,0 +1,11 @@
+<template>
+	<div class="form-group">
+		<label>Select Playlist</label>
+		<ul class="mdl-select-playlist">
+			<li repeat.for="pl of parent.modal_data.content.playlists"
+				click.delegate="selectPlaylist($index, $event)">
+				${pl.name}
+			</li>
+		</ul>
+	</div>
+</template>

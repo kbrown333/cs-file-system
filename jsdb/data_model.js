@@ -126,6 +126,26 @@ module.exports.data_context = {
 		playlists: {
 			get: function() {
 				return get_data('music', '/playlists');
+			},
+			get_key: function(key) {
+				var data = get_data('music', '/playlists');
+				if (data != null) {
+					return data[key];
+				} else {
+					return null;
+				}
+			},
+			set_key: function(key, obj) {
+				var data = get_data('music', '/playlists');
+				if (data != null) {
+					data[key] = obj;
+					apply_changes('music', '/playlists', data);
+				} else {
+					return null;
+				}
+			},
+			update: function(data) {
+				apply_changes('music', '/playlists', data);
 			}
 		}
 	}

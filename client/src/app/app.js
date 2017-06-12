@@ -76,6 +76,9 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                 appLoaded() {
                     this.handleResize();
                 }
+                clickOpenMusicPlayer() {
+                    $(".music-player-container").show();
+                }
                 handleResize() {
                     var resizeTimeout;
                     $(window).resize(() => {

@@ -212,7 +212,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 attached() {
                     this.getFiles();
                     this.app_events = this.fn.mq.Subscribe((event) => {
-                        if (event.target != null && event.target != 'app') {
+                        if (event.target != null && event.target != 'files-panel') {
                             return;
                         }
                         if (this[event.event_name] != null) {

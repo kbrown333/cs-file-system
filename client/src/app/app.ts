@@ -37,8 +37,11 @@ export class App {
         this.handleResize();
     }
 
-    //APP EVENTS
+    clickOpenMusicPlayer() {
+        $(".music-player-container").show();
+    }
 
+    //APP EVENTS
     toggle_header = () => {
         $(".collapse").toggle();
     }

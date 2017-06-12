@@ -24,7 +24,6 @@ export class CpkModal {
 
 	attached() {
 		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
-            if (event.target != null && event.target != 'app') { return; }
             if (this[event.event_name] != null) { this[event.event_name](event.data); }
         });
 	}

@@ -493,6 +493,21 @@ li.selected_track {
     background-color: #474444;
 }
 
+.music-player-container {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    max-width: 400px;
+    right: 0px;
+    top: 0px;
+    z-index: 9999;
+}
+
+.music-player-container > .panel {
+    margin-bottom: 0px;
+    height: 100%;
+}
+
 @media(max-width: 991px) {
 
 }
