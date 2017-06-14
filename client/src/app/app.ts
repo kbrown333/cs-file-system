@@ -20,7 +20,8 @@ export class App {
         this.router.configure((config: RouterConfiguration): RouterConfiguration => {
             config.title = "CS Tech";
             config.map([
-                { route: ['', 'files'], name: 'files', moduleId: './views/files/files', nav: true, title: 'Files' }
+                { route: ['', 'files'], name: 'files', moduleId: './views/files/files', nav: true, title: 'Files' },
+                { route: ['videos'], name: 'videos', moduleId: './views/videos/video-player', nav: true, title: 'Videos' }
             ]);
             return config;
         });

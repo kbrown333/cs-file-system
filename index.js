@@ -25,11 +25,13 @@ require('./jsdb/data_model').init();
 var mw_Index = require('./routes/static/index');
 var mw_Files = require('./routes/files');
 var mw_Music = require('./routes/music');
+var mw_Videos = require('./routes/videos');
 
 //Route Paths to Middleware
 app.use('/', mw_Index);
 app.use('/api/files', mw_Files);
 app.use('/api/music', mw_Music);
+app.use('/api/videos', mw_Videos);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

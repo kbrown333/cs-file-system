@@ -178,6 +178,7 @@ i.paste_btn {
 
 #vid_player {
     margin: 0 auto;
+    max-height: 65vh;
 }
 
 .vertical-align {
@@ -273,7 +274,7 @@ i.paste_btn {
 
 .loaded_songs {
     list-style-type: none;
-    max-height: 180px;
+    max-height: 40vh !important;
     overflow: auto;
     padding-left: 5px;
     color: white;
@@ -508,8 +509,34 @@ li.selected_track {
     height: 100%;
 }
 
-@media(max-width: 991px) {
+.video_panels > .col-md-4 > .panel,
+.video_panels > .col-md-8 > .panel {
+    margin: 0px 3px;;
+}
 
+div[panel-type="video-list"] > ul {
+    list-style-type: none;
+    padding: 5px;
+    margin-bottom: 0px;
+}
+
+div[panel-type="video-list"] > ul > li {
+    padding: 10px 5px;
+    background-color: #2b2626;
+    color: white;
+    cursor: pointer;
+}
+
+div[panel-type="video-list"] > ul > li:nth-of-type(odd) {
+    background-color: #211e1e;
+}
+
+@media(max-width: 991px) {
+    .video_panels > .col-md-4 > .panel,
+    .video_panels > .col-md-8 > .panel {
+        margin: 0px;
+        margin-bottom: 20px;
+    }
 }
 
 @media(min-width: 768px) {

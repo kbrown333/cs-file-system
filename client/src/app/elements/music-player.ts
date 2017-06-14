@@ -339,7 +339,8 @@ export class MusicPlayer {
 				.then(this.getMusicList)
 				.then(this.generateBindableList)
 				.then(this.loadMasterData)
-				.then(this.loadPlayer);
+				.then(this.loadPlayer)
+				.then(() => { this.loaded = true; })
 		}
 	}
 
@@ -360,14 +361,46 @@ export class MusicPlayer {
 		for (var i = 0; i < data.all_files.length; i++) {
 			map[data.all_files[i]] = this.master_map[data.all_files[i]];
 		}
-		for (var i = 0; i < list.length; i++) {
-			index = i;
-			if (list[i].path == data.selected.replace('/music/', 'content/tracks/')) {
-				break;
-			}
+		this.song_index = index;
+		var selected = map[data.selected];
+		this.loadPlayer({map: map, list: list}, selected);
+		if (this.shuffle) {
+			this.generateShuffle();
+		}
+	}
+
+	loadMusicFile = (data: any) => {
+		if (this.loaded) {
+			this.loadFromFilePanel(data);
+		} else {
+			this.initWaveSurfer()
+				.then(this.getMusicList)
+				.then(this.generateBindableList)
+				.then(this.loadMasterData)
+				.then(() => {
+					this.loadFromFilePanel(data);
+					this.loaded = true;
+				});
+		}
+	}
+
+	loadFromFilePanel = (data: any) => {
+		if (this.visibility.player != "show") { this.toggleListView(); }
+		var path_prefix = data.path.substring(1, data.path.length);
+		var list = data.all_files.filter((val) => {
+			return this.master_map[path_prefix + val] != null;
+		}).map((val) => {
+			return this.master_map[path_prefix + val];
+		});
+		var map = {}, index, val;
+		for (var i = 0; i < data.all_files.length; i++) {
+			val = this.master_map[path_prefix + data.all_files[i]];
+			if (val == null) { continue; }
+			map[path_prefix + data.all_files[i]] = val;
 		}
 		this.song_index = index;
-		var selected = map[data.selected.replace('/music/', 'content/tracks/')];
+		var selected = map[data.selected.substring(1, data.selected.length)];
+		$(".music-player-container").show();
 		this.loadPlayer({map: map, list: list}, selected);
 		if (this.shuffle) {
 			this.generateShuffle();

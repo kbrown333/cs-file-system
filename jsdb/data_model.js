@@ -30,11 +30,15 @@ module.exports.init = function() {
 	try {
 		global.svr_config = global.jsdb.config.getData('/svr');
 	} catch (ex) {
-		global.jsdb.config.push('/svr', {
+		var def = {
+			'drives': [],
 			'cache': 'on',
-			'media_root': require('path').join(__dirname, '..', 'dev') + '/'
-		});
-		global.svr_config = {'cache': 'on'};
+			'media_root': require('path').join(__dirname, '..', 'dev') + '/',
+			'build_cached': 'false',
+			'files_cached': 'false'
+		}
+		global.jsdb.config.push('/svr', def);
+		global.svr_config = def;
 	}
 }
 

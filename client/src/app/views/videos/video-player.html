@@ -1,0 +1,55 @@
+<template>
+    <require from="../../attributes/toggle-me"></require>
+	<div class="container host_container">
+		<div class="row video_panels">
+			<div class="col-md-4">
+				<div class="panel panel-danger">
+					<div class="panel-heading">
+						<div style="display: inline-block; margin-right: 7px;">
+							<i class="fa fa-file-video-o"></i>
+						</div>
+						<div style="display: inline-block;">
+							<h3 class="panel-title">Video List</h3>
+						</div>
+					</div>
+					<div class="panel-body" panel-type="video-list">
+						<ul>
+							<li repeat.for="video of videos" click.delegate="loadVideoFile(video)">
+								${video.name}
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="panel panel-danger">
+					<div class="panel-heading">
+						<div style="display: inline-block; margin-right: 7px;">
+							<i class="fa fa-play"></i>
+						</div>
+						<div style="display: inline-block;">
+							<h3 class="panel-title">${now_playing}</h3>
+						</div>
+					</div>
+					<div class="panel-body" panel-type="video-panel">
+						<div class="row vertical-align" style="margin-left: 0px; margin-right: 0px;">
+							<div class="col-xs-1" style="margin-right: 10px;">
+								<i class="fa fa-2x fa-arrow-left" style="padding: 5px;" click.delegate="prev()"></i>
+							</div>
+							<div class="col-xs-10">
+								<div class="video_container">
+									<video id="vid_player" controls="true" class="img img-responsive">
+										<source id="vid_src" type="video/mp4">
+									</video>
+								</div>
+							</div>
+							<div class="col-xs-1" style="text-align: right;">
+								<i class="fa fa-2x fa-arrow-right" style="padding: 5px;" click.delegate="next()"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
