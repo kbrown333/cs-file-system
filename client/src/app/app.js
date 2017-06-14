@@ -32,6 +32,9 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                     this.router = router;
                     this.session = session;
                     this.fn = fn;
+                    this.loadRoute = (route, parms = null) => {
+                        this.router.navigateToRoute(route, parms);
+                    };
                     this.toggle_header = () => {
                         $(".collapse").toggle();
                     };
@@ -49,6 +52,9 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                     };
                     this.automate = (data) => {
                         this.fn.mq.SendMessage({ event_name: 'receiveCommand', data: data });
+                    };
+                    this.loadVideoFiles = (data) => {
+                        this.loadRoute('videos', data);
                     };
                     this.loadRouter();
                     this.loadEventListener();

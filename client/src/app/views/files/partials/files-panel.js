@@ -465,7 +465,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 openFile(file) {
                     var types = {
                         'mp3': 'loadMusicFile',
-                        'mp4': 'loadVideoFile'
+                        'mp4': 'loadVideoFiles'
                     };
                     var ext = file.substring(file.lastIndexOf('.') + 1);
                     var event = types[ext];

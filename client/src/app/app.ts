@@ -44,6 +44,10 @@ export class App {
     }
 
     //APP EVENTS
+    loadRoute = (route: string, parms: any = null) => {
+        this.router.navigateToRoute(route, parms);
+    }
+
     toggle_header = () => {
         $(".collapse").toggle();
     }
@@ -80,4 +84,8 @@ export class App {
     automate = (data: any) => {
         this.fn.mq.SendMessage({event_name: 'receiveCommand', data: data})
     }
+
+    loadVideoFiles = (data: any) => {
+		this.loadRoute('videos', data);
+	}
 }

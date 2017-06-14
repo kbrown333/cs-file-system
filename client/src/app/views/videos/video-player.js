@@ -27,29 +27,56 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     this.videos = [];
                     this.now_playing = '';
                     this.index = -1;
-                    this.loadVideoFile = (data) => {
-                        this.changeVideo(data.path);
+                    this.manual_load = false;
+                    this.loadVideoPlayer = (data, no_start = false) => {
+                        this.changeVideo(data.path, no_start);
                         this.now_playing = data.name;
                     };
-                    this.changeVideo = (link) => {
+                    this.loadVideosFromList = (all_videos, data) => {
+                        var map = {};
+                        for (var i = 0; i < all_videos.length; i++) {
+                            map[all_videos[i].path] = true;
+                        }
+                        var video_files = [];
+                        var start = 'media/' + data.path.substring(1, data.path.length);
+                        var index = 0;
+                        for (var i = 0; i < data.all_files.length; i++) {
+                            if (map[start + data.all_files[i]]) {
+                                if (data.path + data.all_files[i] == data.selected) {
+                                    index = video_files.length;
+                                }
+                                video_files.push({
+                                    path: start + data.all_files[i],
+                                    name: data.all_files[i]
+                                });
+                            }
+                        }
+                        if (video_files.length > 0) {
+                            this.index = index;
+                            this.videos = video_files;
+                            this.loadVideoPlayer(video_files[index], true);
+                        }
+                    };
+                    this.changeVideo = (link, no_start = false) => {
                         var player = document.getElementById('vid_player');
                         var video = document.getElementById('vid_src');
                         player.pause();
                         video.src = link;
                         player.load();
-                        player.play();
+                        if (!no_start)
+                            player.play();
                         document.getElementById('vid_player').addEventListener('ended', () => {
                             setTimeout(() => { this.next(); }, 5000);
                         }, false);
                     };
                     this.next = () => {
                         if (this.index > -1 && this.index < this.videos.length - 1) {
-                            this.loadVideoFile(this.videos[++this.index]);
+                            this.loadVideoPlayer(this.videos[++this.index]);
                         }
                     };
                     this.prev = () => {
                         if (this.index > 0) {
-                            this.loadVideoFile(this.videos[--this.index]);
+                            this.loadVideoPlayer(this.videos[--this.index]);
                         }
                     };
                     this.screenResize = (size = null) => {
@@ -74,23 +101,34 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                             this[event.event_name](event.data);
                         }
                     });
-                    this.getVideoList();
                     this.screenResize();
+                    if (this.manual_load) {
+                        this.getVideoList(this.manual_data);
+                    }
+                    else {
+                        this.getVideoList();
+                    }
                 }
                 detached() {
                     this.app_events.dispose();
                 }
-                getVideoList() {
+                activate(parms = null) {
+                    if (parms != null && parms.all_files != null) {
+                        this.manual_load = true;
+                        this.manual_data = parms;
+                    }
+                }
+                getVideoList(data = null) {
                     this.fn.fn_Ajax({ url: '/api/videos/mp4' })
                         .then((rslt) => {
-                        this.videos = rslt;
-                        if (rslt.length > 0) {
-                            var player = document.getElementById('vid_player');
-                            var video = document.getElementById('vid_src');
-                            video.src = rslt[0].path;
-                            this.now_playing = rslt[0].name;
-                            player.load();
+                        if (rslt.length <= 0)
+                            return;
+                        if (data != null)
+                            this.loadVideosFromList(rslt, data);
+                        else {
+                            this.videos = rslt;
                             this.index = 0;
+                            this.loadVideoPlayer(rslt[0], true);
                         }
                     });
                 }
