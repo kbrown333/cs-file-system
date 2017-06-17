@@ -130,16 +130,16 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                             index = 0;
                         }
                         else {
-                            var name = data[oi];
-                            if (this[ii][data[oi]] == null) {
-                                index = this[ii][data[oi]] = this[ii].count;
+                            var name = data[oi].toLowerCase().replace(/[^a-zA-Z0-9 ]/g, '');
+                            if (this[ii][name] == null) {
+                                index = this[ii][name] = this[ii].count;
                                 this[ii].count++;
                                 this[ti].push({});
                                 this[ti][index]['array'] = [];
-                                this[ti][index]['name'] = name;
+                                this[ti][index]['name'] = data[oi];
                             }
                             else {
-                                index = this[ii][data[oi]];
+                                index = this[ii][name];
                             }
                         }
                         this[ti][index]['array'].push(data);
@@ -338,10 +338,7 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     };
                     this.resizeCategoryLists = () => {
                         setTimeout(() => {
-                            var outer = $('.panel-body[panel-type="music-panel"]').height();
-                            var inner = $('.list-view-header').height();
-                            var height = outer - inner - 20;
-                            height = Math.max(height, 150);
+                            var height = $(window).height() - 150;
                             $('.category-list').css('max-height', height + "px");
                             $('.playlist-data').css('max-height', (height - 40) + "px");
                             $('.song-list').css('max-height', (height - 40) + "px");

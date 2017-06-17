@@ -25,12 +25,15 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                 constructor(fn) {
                     this.fn = fn;
                     this.videos = [];
+                    this.visible_videos = [];
                     this.now_playing = '';
                     this.index = -1;
                     this.manual_load = false;
                     this.vid_finished = false;
-                    this.loadVideoPlayer = (data, no_start = false) => {
+                    this.loadVideoPlayer = (data, no_start = false, index = null) => {
                         this.changeVideo(data.path, no_start);
+                        if (index != null)
+                            this.index = index;
                         this.now_playing = data.name;
                     };
                     this.loadVideosFromList = (all_videos, data) => {
@@ -55,6 +58,7 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         if (video_files.length > 0) {
                             this.index = index;
                             this.videos = video_files;
+                            this.visible_videos = $.extend(true, [], video_files);
                             this.loadVideoPlayer(video_files[index], true);
                         }
                     };
@@ -71,13 +75,29 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                             player.play();
                     };
                     this.next = () => {
-                        if (this.index > -1 && this.index < this.videos.length - 1) {
-                            this.loadVideoPlayer(this.videos[++this.index]);
+                        if (this.index > -1 && this.index < this.visible_videos.length - 1) {
+                            this.loadVideoPlayer(this.visible_videos[++this.index]);
                         }
                     };
                     this.prev = () => {
                         if (this.index > 0) {
-                            this.loadVideoPlayer(this.videos[--this.index]);
+                            this.loadVideoPlayer(this.visible_videos[--this.index]);
+                        }
+                    };
+                    this.toggleSearchBox = () => {
+                        $('.panel-body[panel-type="video-list"]').toggleClass('searching');
+                    };
+                    this.searchVideos = (event, force = false) => {
+                        if (event.which == 13 || force) {
+                            var val = $("input", ".srch-video-box").val().trim();
+                            if (val == "") {
+                                this.visible_videos = $.extend(true, [], this.videos);
+                            }
+                            else {
+                                this.visible_videos = this.videos.filter((vid) => {
+                                    return vid.path.toLowerCase().indexOf(val.toLowerCase()) != -1;
+                                });
+                            }
                         }
                     };
                     this.screenResize = (size = null) => {
@@ -113,6 +133,8 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     else {
                         this.getVideoList();
                     }
+                    $("input", ".srch-video-box").keyup(this.searchVideos);
+                    $("input", ".srch-video-box").focusout(() => { this.searchVideos({}, true); });
                 }
                 detached() {
                     this.app_events.dispose();
@@ -132,6 +154,7 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                             this.loadVideosFromList(rslt, data);
                         else {
                             this.videos = rslt;
+                            this.visible_videos = $.extend(true, [], rslt);
                             this.index = 0;
                             this.loadVideoPlayer(rslt[0], true);
                         }

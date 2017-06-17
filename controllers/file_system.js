@@ -8,14 +8,15 @@ var formidable = require('formidable');
 var dbcontext = require('../jsdb/data_model').data_context;
 var _extend = require('extend');
 
-module.exports.get_list = function(callback) {
+module.exports.get_list = function(callback, nocache) {
 	var cache = dbcontext.svr_config.get_key('cache') == 'on';
 	var cache_loaded = dbcontext.svr_config.get_key('files_cached') == 'true'
-	if (cache && cache_loaded) {
+	if (!nocache && (cache && cache_loaded)) {
 		console.log('Returning files from cache');
 		var build = dbcontext.files.get();
 		callback(null, build);
 	} else {
+		console.log('Manual file retrieval');
 		get_list_from_drives(global.svr_config.drives)
 			.then(cache_files)
 			.then((rslt) => { callback(null, rslt); })
@@ -26,14 +27,15 @@ module.exports.get_list = function(callback) {
 	}
 }
 
-module.exports.get_object = function(callback) {
+module.exports.get_object = function(callback, nocache) {
 	var cache = dbcontext.svr_config.get_key('cache') == 'on';
 	var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
-	if (cache && cache_loaded) {
+	if (!nocache && (cache && cache_loaded)) {
 		console.log('Returning build from cache');
 		var build = dbcontext.build.get();
 		callback(null, build);
 	} else {
+		console.log('Manual build retrieval');
 		get_object_from_drives(global.svr_config.drives)
 			.then(cache_build)
 			.then((rslt) => { callback(null, rslt); })

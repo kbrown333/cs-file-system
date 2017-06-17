@@ -32,6 +32,21 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                     this.router = router;
                     this.session = session;
                     this.fn = fn;
+                    this.nav = {
+                        show_loader: 'hide',
+                        show_content: 'show'
+                    };
+                    this.refreshFileIndexes = () => {
+                        this.show_loader();
+                        this.fn.fn_Ajax({ url: '/api/files/index' })
+                            .then(() => {
+                            this.show_content();
+                        })
+                            .catch((err) => {
+                            console.log(err);
+                            this.show_content();
+                        });
+                    };
                     this.loadRoute = (route, parms = null) => {
                         this.router.navigateToRoute(route, parms);
                     };
@@ -86,6 +101,14 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                 clickOpenMusicPlayer() {
                     $(".music-player-container").show();
                     this.fn.mq.SendMessage({ event_name: 'loadMusicPlayerPanel', target: 'music-player' });
+                }
+                show_loader() {
+                    this.nav.show_loader = 'show';
+                    this.nav.show_content = 'hide';
+                }
+                show_content() {
+                    this.nav.show_loader = 'hide';
+                    this.nav.show_content = 'show';
                 }
                 handleResize() {
                     var resizeTimeout;

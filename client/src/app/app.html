@@ -16,6 +16,10 @@
                 <a class="navbar-brand" href="#" style="float: right;" click.delegate="clickOpenMusicPlayer()">
                     <i class="fa fa-music"></i>
                 </a>
+                <a class="navbar-brand" href="#" style="float: right; margin-right: 15px;"
+                 click.delegate="refreshFileIndexes()">
+                    <i class="fa fa-refresh"></i>
+                </a>
             </div>
         </div>
         <div class="collapse navbar-collapse" id="navbar">
@@ -33,16 +37,27 @@
              click.delegate="clickOpenMusicPlayer()">
                 <i class="fa fa-music"></i>
             </a>
+            <a class="navbar-brand show_on_monitor" href="#" style="float: right; margin-right: 15px;"
+             click.delegate="refreshFileIndexes()">
+                <i class="fa fa-refresh"></i>
+            </a>
         </div>
     </nav>
     <require from="./elements/music-player"></require>
+    <require from="./attributes/toggle-me"></require>
     <music-player></music-player>
-    <div class="page-host">
+    <div class="page-host" toggle-me.two-way="nav.show_content">
         <require from="./elements/cpk-modal"></require>
         <cpk-modal modal="edit_fname" view="./modal/edit-fname"></cpk-modal>
         <cpk-modal modal="add_folder" view="./modal/add-folder"></cpk-modal>
         <cpk-modal modal="add_playlist" view="./modal/add-playlist"></cpk-modal>
         <cpk-modal modal="select_playlist" view="./modal/select-playlist"></cpk-modal>
         <router-view class="app-content"></router-view>
+    </div>
+    <div class="page-host" toggle-me.two-way="nav.show_loader">
+        <div class="splash">
+            <div class="message">Refreshing File System</div>
+            <i class="fa fa-spinner fa-spin fa-3x"></i>
+        </div>
     </div>
 </template>

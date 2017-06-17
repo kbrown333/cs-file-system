@@ -24,6 +24,19 @@ router.get('/build', function(req, res) {
 	});
 });
 
+router.get('/index', function(req, res) {
+	csfs.get_list(function(err, rslt) {
+		if (err) { return res.status(500).send(err); }
+		csfs.get_object(function(err2, rslt2) {
+			if (err2) {
+				res.status(500).send(err2);
+			} else {
+				res.json(rslt2);
+			}
+		}, true);
+	}, true);
+});
+
 router.post('/upload', function(req, res) {
 	var add_path = req.headers['x-path'];
 	var drive_name = req.headers['x-drive'];

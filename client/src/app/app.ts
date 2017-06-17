@@ -8,6 +8,10 @@ import {AggregateData} from './models/message_queue';
 export class App {
 
     app_events: any;
+    nav: any = {
+        show_loader: 'hide',
+        show_content: 'show'
+    }
 
     //APPLICATION LOAD FUNCTIONS
     constructor(private router: Router, private session: SessionData, private fn: FnTs) {
@@ -41,6 +45,28 @@ export class App {
     clickOpenMusicPlayer() {
         $(".music-player-container").show();
         this.fn.mq.SendMessage({event_name: 'loadMusicPlayerPanel', target: 'music-player'});
+    }
+
+	show_loader() {
+		this.nav.show_loader = 'show';
+		this.nav.show_content = 'hide';
+	}
+
+	show_content() {
+		this.nav.show_loader = 'hide';
+		this.nav.show_content = 'show';
+	}
+
+    refreshFileIndexes = () => {
+        this.show_loader();
+        this.fn.fn_Ajax({url: '/api/files/index'})
+            .then(() => {
+                this.show_content();
+            })
+            .catch((err) => {
+                console.log(err);
+                this.show_content();
+            });
     }
 
     //APP EVENTS

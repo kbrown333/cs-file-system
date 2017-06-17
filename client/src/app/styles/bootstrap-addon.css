@@ -518,6 +518,8 @@ div[panel-type="video-list"] > ul {
     list-style-type: none;
     padding: 5px;
     margin-bottom: 0px;
+    max-height: 97%;
+    overflow: auto;
 }
 
 div[panel-type="video-list"] > ul > li {
@@ -529,6 +531,26 @@ div[panel-type="video-list"] > ul > li {
 
 div[panel-type="video-list"] > ul > li:nth-of-type(odd) {
     background-color: #211e1e;
+}
+
+div[panel-type="video-list"] > .srch-video-box {
+    display: none;
+}
+
+.searching[panel-type="video-list"] > .srch-video-box {
+    display: block !important;
+}
+
+.searching[panel-type="video-list"] > ul {
+    max-height: 89%;
+}
+
+div[panel-type="video-list"] > .srch-video-box > input {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    line-height: 1.25;
+    color: black;
 }
 
 @media(max-width: 991px) {

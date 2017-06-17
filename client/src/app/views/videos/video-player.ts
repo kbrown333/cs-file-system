@@ -6,6 +6,7 @@ export class VideoPlayer {
 
 	app_events: any;
 	videos: any = [];
+	visible_videos: any = [];
 	now_playing: string = '';
 	index: number = -1;
 	manual_load: boolean = false;
@@ -29,6 +30,8 @@ export class VideoPlayer {
 		} else {
 			this.getVideoList();
 		}
+		$("input", ".srch-video-box").keyup(this.searchVideos);
+		$("input", ".srch-video-box").focusout(() => { this.searchVideos({}, true) });
 	}
 
 	detached() {
@@ -50,14 +53,16 @@ export class VideoPlayer {
 					this.loadVideosFromList(rslt, data);
 				else {
 					this.videos = rslt;
+					this.visible_videos = $.extend(true, [], rslt);
 					this.index = 0;
 					this.loadVideoPlayer(rslt[0], true);
 				}
 			});
 	}
 
-	loadVideoPlayer = (data: any, no_start: boolean = false) => {
+	loadVideoPlayer = (data: any, no_start: boolean = false, index: number = null) => {
 		this.changeVideo(data.path, no_start);
+		if (index != null) this.index = index;
 		this.now_playing = data.name;
 	}
 
@@ -83,6 +88,7 @@ export class VideoPlayer {
 		if (video_files.length > 0) {
 			this.index = index;
 			this.videos = video_files;
+			this.visible_videos = $.extend(true, [], video_files);
 			this.loadVideoPlayer(video_files[index], true);
 		}
 	}
@@ -98,13 +104,30 @@ export class VideoPlayer {
 	}
 
 	next = () => {
-		if (this.index > -1 && this.index < this.videos.length - 1) {
-			this.loadVideoPlayer(this.videos[++this.index]);
+		if (this.index > -1 && this.index < this.visible_videos.length - 1) {
+			this.loadVideoPlayer(this.visible_videos[++this.index]);
 		}
 	}
 	prev = () => {
 		if (this.index > 0) {
-			this.loadVideoPlayer(this.videos[--this.index]);
+			this.loadVideoPlayer(this.visible_videos[--this.index]);
+		}
+	}
+
+	toggleSearchBox = (): void => {
+		$('.panel-body[panel-type="video-list"]').toggleClass('searching');
+	}
+
+	searchVideos = (event: any, force: boolean = false) => {
+		if (event.which == 13 || force) {
+			var val = $("input", ".srch-video-box").val().trim();
+			if (val == "") {
+				this.visible_videos = $.extend(true, [], this.videos);
+			} else {
+				this.visible_videos = this.videos.filter((vid) => {
+					return vid.path.toLowerCase().indexOf(val.toLowerCase()) != -1;
+				});
+			}
 		}
 	}
 

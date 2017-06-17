@@ -11,10 +11,17 @@
 						<div style="display: inline-block;">
 							<h3 class="panel-title">Video List</h3>
 						</div>
+                        <div style="display: inline-block; float: right;">
+        					<i id="btn-srch-movs" class="fa fa-search" style="cursor: pointer; padding: 3px;"
+        						click.delegate="toggleSearchBox()"></i>
+        				</div>
 					</div>
 					<div class="panel-body" panel-type="video-list">
+                        <div class="srch-video-box">
+                            <input type="text" placeholder="Search by Name or Path!" />
+                        </div>
 						<ul>
-							<li repeat.for="video of videos" click.delegate="loadVideoPlayer(video)">
+							<li repeat.for="video of visible_videos" click.delegate="loadVideoPlayer(video, null, $index)">
 								${video.name}
 							</li>
 						</ul>
