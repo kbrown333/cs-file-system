@@ -10,6 +10,7 @@ export class VideoPlayer {
 	index: number = -1;
 	manual_load: boolean = false;
 	manual_data: any;
+	private vid_finished: boolean = false;
 
 	constructor(private fn: FnTs) {
 	}
@@ -85,11 +86,13 @@ export class VideoPlayer {
 	changeVideo = (link: string, no_start: boolean = false) => {
 		var player = <HTMLVideoElement>document.getElementById('vid_player');
 		var video = <HTMLVideoElement>document.getElementById('vid_src');
-		player.pause();
+		if (!this.vid_finished)	player.pause();
+		else this.vid_finished = false;
 		video.src = link;
 		player.load();
 		if (!no_start) player.play();
 		document.getElementById('vid_player').addEventListener('ended', () => {
+			this.vid_finished = true;
 			setTimeout(() => { this.next(); }, 5000);
 		}, false);
 	}

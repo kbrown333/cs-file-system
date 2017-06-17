@@ -28,6 +28,7 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     this.now_playing = '';
                     this.index = -1;
                     this.manual_load = false;
+                    this.vid_finished = false;
                     this.loadVideoPlayer = (data, no_start = false) => {
                         this.changeVideo(data.path, no_start);
                         this.now_playing = data.name;
@@ -60,12 +61,16 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     this.changeVideo = (link, no_start = false) => {
                         var player = document.getElementById('vid_player');
                         var video = document.getElementById('vid_src');
-                        player.pause();
+                        if (!this.vid_finished)
+                            player.pause();
+                        else
+                            this.vid_finished = false;
                         video.src = link;
                         player.load();
                         if (!no_start)
                             player.play();
                         document.getElementById('vid_player').addEventListener('ended', () => {
+                            this.vid_finished = true;
                             setTimeout(() => { this.next(); }, 5000);
                         }, false);
                     };
