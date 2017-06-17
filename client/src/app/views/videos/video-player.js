@@ -69,10 +69,6 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         player.load();
                         if (!no_start)
                             player.play();
-                        document.getElementById('vid_player').addEventListener('ended', () => {
-                            this.vid_finished = true;
-                            setTimeout(() => { this.next(); }, 5000);
-                        }, false);
                     };
                     this.next = () => {
                         if (this.index > -1 && this.index < this.videos.length - 1) {
@@ -107,6 +103,10 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         }
                     });
                     this.screenResize();
+                    document.getElementById('vid_player').addEventListener('ended', () => {
+                        this.vid_finished = true;
+                        setTimeout(() => { this.next(); }, 5000);
+                    }, false);
                     if (this.manual_load) {
                         this.getVideoList(this.manual_data);
                     }

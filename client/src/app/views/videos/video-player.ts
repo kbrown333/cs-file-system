@@ -20,6 +20,10 @@ export class VideoPlayer {
 			if (this[event.event_name] != null) { this[event.event_name](event.data); }
 		});
 		this.screenResize();
+		document.getElementById('vid_player').addEventListener('ended', () => {
+			this.vid_finished = true;
+			setTimeout(() => { this.next(); }, 5000);
+		}, false);
 		if (this.manual_load) {
 			this.getVideoList(this.manual_data);
 		} else {
@@ -91,10 +95,6 @@ export class VideoPlayer {
 		video.src = link;
 		player.load();
 		if (!no_start) player.play();
-		document.getElementById('vid_player').addEventListener('ended', () => {
-			this.vid_finished = true;
-			setTimeout(() => { this.next(); }, 5000);
-		}, false);
 	}
 
 	next = () => {
