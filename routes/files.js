@@ -2,13 +2,26 @@ var express = require('express');
 var router = express.Router();
 var csfs = require("../controllers/file_system");
 var dbcontext = require('../jsdb/data_model').data_context;
+var npm_path = require('path');
 
 router.get('/', function(req, res) {
-	return_files(res);
+	csfs.get_list(function(err, rslt) {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.json(rslt);
+		}
+	});
 });
 
 router.get('/build', function(req, res) {
-	return_build(res);
+	csfs.get_object(function(err, rslt) {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.json(rslt);
+		}
+	});
 });
 
 router.post('/upload', function(req, res) {
@@ -31,7 +44,13 @@ router.post('/upload', function(req, res) {
 		} else {
 			var build = dbcontext.build.get_key(drive.name);
 			csfs.build_manager.insert(drive.name, build, add_path, rslt);
-			return_build(res);
+			csfs.get_object(function(err2, rslt2) {
+				if (err) {
+					res.status(500).send(err2);
+				} else {
+					res.json(rslt2);
+				}
+			});
 		}
 	});
 });
@@ -69,13 +88,22 @@ router.post('/mod/copy', function(req, res) {
 		res.status(500).send('Drive(s) not found');
 		return;
 	}
-	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
-	var to_path = to_drive.path + (req.body.to_path == '/' ? '/' : (req.body.to_path + '/'));
+	var from_path = generateFilPath(from_drive.path, req.body.from_path);
+	var to_path = generateFilPath(to_drive.path, req.body.to_path);
 	csfs.copy_files(to_drive, from_path, to_path, req.body.contents)
 		.then((rslt) => {
 			var build = dbcontext.build.get_key(to_drive.name);
 			csfs.build_manager.update_folder(to_drive, build, to_path, req.body.to_path)
-				.then(() => {return_build(res)});
+				.then(() => {
+					csfs.get_object(function(err, rslt2) {
+						if (err) {
+							res.status(500).send(err);
+						} else {
+							res.json(rslt2);
+						}
+					});
+				})
+				.catch((err) => { console.dir(err); res.status(500).send('Error copying file, check logs.'); });
 		})
 		.catch((err) => {
 			res.status(500).send('Error copying files, please try again.');
@@ -88,12 +116,21 @@ router.post('/mod/delete', function(req, res) {
 		res.status(500).send('Drive not found');
 		return;
 	}
-	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
+	var from_path = generateFilPath(from_drive.path, req.body.from_path);
 	csfs.delete_files(from_path, req.body.contents)
 		.then((rslt) => {
 			var build = dbcontext.build.get_key(from_drive.name);
 			csfs.build_manager.update_folder(from_drive, build, from_path, req.body.from_path)
-				.then(() => {return_build(res)});
+				.then(() => {
+					csfs.get_object(function(err, rslt2) {
+						if (err) {
+							res.status(500).send(err);
+						} else {
+							res.json(rslt2);
+						}
+					});
+				})
+				.catch((err) => { console.dir(err); res.status(500).send('Error deleting file, check logs.'); });
 		})
 		.catch((err) => {
 			res.status(500).send('Error deleting files, please try again.');
@@ -110,12 +147,21 @@ router.post('/mod/new_folder', function(req, res) {
 		res.status(500).send('Invalid folder name');
 		return;
 	}
-	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
+	var from_path = generateFilPath(from_drive.path, req.body.from_path);
 	csfs.create_folder(from_path + req.body.folder_name)
 		.then(() => {
 			var build = dbcontext.build.get_key(from_drive.name);
 			csfs.build_manager.insert_folder(from_drive, build, req.body.from_path, req.body.folder_name)
-				.then(() => {return_build(res)});
+				.then(() => {
+					csfs.get_object(function(err, rslt2) {
+						if (err) {
+							res.status(500).send(err);
+						} else {
+							res.json(rslt2);
+						}
+					});
+				})
+				.catch((err) => { console.dir(err); res.status(500).send('Error creating folder, check logs.'); });
 		})
 		.catch((err) => {
 			res.status(500).send('Error adding new folder, please try again.');
@@ -132,12 +178,21 @@ router.post('/mod/rename', function(req, res) {
 		res.status(500).send('Invalid file path(s), a restart may resolve this issue.');
 		return;
 	}
-	var from_path =  from_drive.path + (req.body.from_path == '/' ? '/' : (req.body.from_path + '/'));
+	var from_path = generateFilPath(from_drive.path, req.body.from_path);
 	csfs.rename_file(from_path + req.body.old_name, from_path + req.body.new_name)
 		.then(() => {
 			var build = dbcontext.build.get_key(from_drive.name);
 			csfs.build_manager.rename_file(from_drive, build, req.body.from_path, req.body.old_name, req.body.new_name)
-				.then(() => {return_build(res)});
+				.then(() => {
+					csfs.get_object(function(err, rslt2) {
+						if (err) {
+							res.status(500).send(err);
+						} else {
+							res.json(rslt2);
+						}
+					});
+				})
+				.catch((err) => { console.dir(err); res.status(500).send('Error renaming file, check logs.'); });
 		})
 		.catch((err) => {
 			res.status(500).send('Error adding new folder, please try again.');
@@ -147,63 +202,6 @@ router.post('/mod/rename', function(req, res) {
 module.exports = router;
 
 //PRIVATE METHODS
-
-function return_files(res) {
-	var cache = dbcontext.svr_config.get_key('cache') == 'on';
-	var cache_loaded = dbcontext.svr_config.get_key('files_cached') == 'true'
-	if (cache && cache_loaded) {
-		console.log('Returning files from cache');
-		var build = dbcontext.files.get();
-		res.json(build);
-	} else {
-		csfs.get_list(global.svr_config.drives)
-			.then(cache_files)
-			.then((rslt) => { res.json(rslt); })
-			.catch((errs) => {
-				console.log(errs);
-				res.status(500).send('Error retreiving files.')
-			});
-	}
-}
-
-function return_build(res) {
-	var cache = dbcontext.svr_config.get_key('cache') == 'on';
-	var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
-	if (cache && cache_loaded) {
-		console.log('Returning build from cache');
-		var build = dbcontext.build.get();
-		res.json(build);
-	} else {
-		csfs.get_object(global.svr_config.drives)
-			.then(cache_build)
-			.then((rslt) => { res.json(rslt); })
-			.catch((errs) => {
-				console.log(errs);
-				res.status(500).send('Error retreiving files.')
-			});
-	}
-}
-
-function cache_files(data) {
-	return new Promise((res, err) => {
-		if (dbcontext.svr_config.get_key('cache') == 'on') {
-			dbcontext.files.update(data);
-			dbcontext.svr_config.set_key('files_cached', 'true');
-		}
-		res(data);
-	});
-}
-
-function cache_build(data) {
-	return new Promise((res, err) => {
-		if (dbcontext.svr_config.get_key('cache') == 'on') {
-			dbcontext.build.update(data);
-			dbcontext.svr_config.set_key('build_cached', 'true');
-		}
-		res(data);
-	});
-}
-
 function get_drive_by_name(drive_name) {
 	var drives = dbcontext.svr_config.get_key('drives');
 	if (drives == null) { return null; }
@@ -213,4 +211,9 @@ function get_drive_by_name(drive_name) {
 	} else {
 		return null;
 	}
+}
+
+function generateFilPath(drive, path) {
+	if (path == '/') { return drive + '/'; }
+	return npm_path.join(drive, path) + '/';
 }

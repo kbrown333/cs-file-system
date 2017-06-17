@@ -8,66 +8,41 @@ var formidable = require('formidable');
 var dbcontext = require('../jsdb/data_model').data_context;
 var _extend = require('extend');
 
-module.exports.get_list = function(drives) {
-	return new Promise((res, error) => {
-		if (drives == null) {
-			error("No drives found.");
-		} else {
-			var files = {}, errs = [];
-			if (drives.length == 0) { error("No drives found."); }
-			var finished = __.after(drives.length, function() {
-				if (errs.length > 0) {
-					error('Error retrieving files.');
-				} else {
-					res(files);
-				}
+module.exports.get_list = function(callback) {
+	var cache = dbcontext.svr_config.get_key('cache') == 'on';
+	var cache_loaded = dbcontext.svr_config.get_key('files_cached') == 'true'
+	if (cache && cache_loaded) {
+		console.log('Returning files from cache');
+		var build = dbcontext.files.get();
+		callback(null, build);
+	} else {
+		get_list_from_drives(global.svr_config.drives)
+			.then(cache_files)
+			.then((rslt) => { callback(null, rslt); })
+			.catch((errs) => {
+				console.log(errs);
+				callback('Error retreiving files.')
 			});
-			var add = function(err, tree, key) {
-				if (err) {
-					errs.push(err);
-					finished();
-				} else {
-					files[key] = [];
-					tree.forEach(function(file, index) {
-						files[key].push(file);
-					});
-					finished();
-				}
-			}
-			for (var i = 0; i < drives.length; i++) {
-				(function(index) {
-					var key = drives[index].name;
-					ls.getList(drives[index].path, (err, tree) => { add(err, tree, key); });
-				})(i);
-			}
-		}
-	});
+	}
 }
 
-module.exports.get_object = function(drives) {
-	return new Promise((res, error) => {
-		if (drives == null) {
-			error("No drives found.");
-		} else {
-			var rslt = {};
-			var finished = __.after(drives.length, function() {
-				res(rslt);
+module.exports.get_object = function(callback) {
+	var cache = dbcontext.svr_config.get_key('cache') == 'on';
+	var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
+	if (cache && cache_loaded) {
+		console.log('Returning build from cache');
+		var build = dbcontext.build.get();
+		callback(null, build);
+	} else {
+		get_object_from_drives(global.svr_config.drives)
+			.then(cache_build)
+			.then((rslt) => { callback(null, rslt); })
+			.catch((errs) => {
+				console.log(errs);
+				callback('Error retreiving files.')
 			});
-			for (var i = 0; i < drives.length; i++) {
-				(function(index) {
-					var key = drives[index].name;
-					ls.getObject(drives[index].path, (err, tree) => {
-						if (err) {
-							console.dir(err);
-						}
-						rslt[key] = tree;
-						finished();
-					});
-				})(i);
-			}
-		}
-	});
-}
+	}
+};
 
 module.exports.upload_files = function(form_data, dir, callback) {
 	var form = new formidable.IncomingForm();
@@ -186,7 +161,7 @@ module.exports.build_manager = {
 				var cache_loaded = dbcontext.svr_config.get_key('build_cached') == 'true'
 				if (cache && cache_loaded) {
 					ls.getObject(upd_folder, function(err, tree) {
-						if (err) { error(tree); return; }
+						if (err) { error(err); return; }
 						update_specific_directory(build, path, tree);
 						dbcontext.build.set_key(drive.name, build);
 						res();
@@ -272,4 +247,85 @@ function get_specific_directory(obj, path) {
 		dir = dir[path];
 	}
 	return dir;
+}
+
+function get_list_from_drives(drives) {
+	return new Promise((res, error) => {
+		if (drives == null) {
+			error("No drives found.");
+		} else {
+			var files = {}, errs = [];
+			if (drives.length == 0) { error("No drives found."); }
+			var finished = __.after(drives.length, function() {
+				if (errs.length > 0) {
+					error('Error retrieving files.');
+				} else {
+					res(files);
+				}
+			});
+			var add = function(err, tree, key) {
+				if (err) {
+					errs.push(err);
+					finished();
+				} else {
+					files[key] = [];
+					tree.forEach(function(file, index) {
+						files[key].push(file);
+					});
+					finished();
+				}
+			}
+			for (var i = 0; i < drives.length; i++) {
+				(function(index) {
+					var key = drives[index].name;
+					ls.getList(drives[index].path, (err, tree) => { add(err, tree, key); });
+				})(i);
+			}
+		}
+	});
+}
+
+function cache_files(data) {
+	return new Promise((res, err) => {
+		if (dbcontext.svr_config.get_key('cache') == 'on') {
+			dbcontext.files.update(data);
+			dbcontext.svr_config.set_key('files_cached', 'true');
+		}
+		res(data);
+	});
+}
+
+function get_object_from_drives(drives) {
+	return new Promise((res, error) => {
+		if (drives == null) {
+			error("No drives found.");
+		} else {
+			var rslt = {};
+			var finished = __.after(drives.length, function() {
+				res(rslt);
+			});
+			for (var i = 0; i < drives.length; i++) {
+				(function(index) {
+					var key = drives[index].name;
+					ls.getObject(drives[index].path, (err, tree) => {
+						if (err) {
+							console.dir(err);
+						}
+						rslt[key] = tree;
+						finished();
+					});
+				})(i);
+			}
+		}
+	});
+}
+
+function cache_build(data) {
+	return new Promise((res, err) => {
+		if (dbcontext.svr_config.get_key('cache') == 'on') {
+			dbcontext.build.update(data);
+			dbcontext.svr_config.set_key('build_cached', 'true');
+		}
+		res(data);
+	});
 }

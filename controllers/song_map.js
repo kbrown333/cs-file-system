@@ -5,7 +5,8 @@ var path = require('path');
 var id3_reader = require('jsmediatags');
 
 module.exports.map = function(callback) {
-	csfs.get_list(global.svr_config.drives).then((content) => {
+	csfs.get_list((err, content) => {
+		if (err) {return;}
 		var music_db = dbcontext.music.songs;
 		var root = dbcontext.svr_config.get_key('media_root');
 		var queue = getFileList(content, music_db, root);
