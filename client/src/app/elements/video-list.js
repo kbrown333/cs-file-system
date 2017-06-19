@@ -96,6 +96,16 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                             this.show_delete_group = 'hide';
                         }
                     };
+                    this.loadGroupInPlayer = () => {
+                        if (this.visible_group.filter_groups.length == 0) {
+                            return;
+                        }
+                        this.fn.mq.SendMessage({
+                            event_name: 'loadVideoGroup',
+                            target: 'video-player',
+                            data: this.visible_group.filter_groups
+                        });
+                    };
                     this.clickDeleteGroups = () => {
                         if (this.selected_groups.length == 0) {
                             return;

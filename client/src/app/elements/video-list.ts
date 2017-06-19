@@ -99,6 +99,15 @@ export class VideoList {
 		}
 	}
 
+	loadGroupInPlayer = () => {
+		if (this.visible_group.filter_groups.length == 0) {return;}
+		this.fn.mq.SendMessage({
+			event_name: 'loadVideoGroup',
+			target: 'video-player',
+			data: this.visible_group.filter_groups
+		});
+	}
+
 	clickDeleteGroups = () => {
 		if (this.selected_groups.length == 0) { return; }
 		var map = {};

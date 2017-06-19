@@ -33,6 +33,8 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         videos: 'show',
                         list: 'hide'
                     };
+                    this.shuffle_single = false;
+                    this.shuffle_passes = 3;
                     this.vid_finished = false;
                     this.toggleListView = () => {
                         if (this.visibility.videos == 'show') {
@@ -58,6 +60,7 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         for (var i = 0; i < all_videos.length; i++) {
                             map[all_videos[i].path] = true;
                         }
+                        $("input", ".srch-video-box").val(data.path);
                         var video_files = [];
                         var start = 'media/' + data.path.substring(1, data.path.length);
                         var index = 0;
@@ -74,7 +77,6 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         }
                         if (video_files.length > 0) {
                             this.index = index;
-                            this.videos = video_files;
                             this.visible_videos = $.extend(true, [], video_files);
                             this.loadVideoPlayer(video_files[index], true);
                         }
@@ -117,6 +119,57 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                             }
                         }
                     };
+                    this.filterByGroups = (queries, videos) => {
+                        var selected_vids = [], q;
+                        var max = -1, max_index = 0;
+                        for (var i = 0; i < queries.length; i++) {
+                            q = queries[i].toLowerCase();
+                            for (var j = 0; j < videos.length; j++) {
+                                if (videos[j].path.toLowerCase().indexOf(q) != -1) {
+                                    if (selected_vids[i] == null)
+                                        selected_vids.push([]);
+                                    selected_vids[i].push(videos[j]);
+                                }
+                            }
+                            for (var j = 0; j < this.shuffle_passes; j++) {
+                                selected_vids[i] = this.randomShuffle(selected_vids[i]);
+                            }
+                            if (max < selected_vids[i].length) {
+                                max = selected_vids[i].length;
+                                max_index = i;
+                            }
+                        }
+                        for (var i = 0; i < this.shuffle_passes; i++) {
+                            selected_vids = this.randomShuffle(selected_vids);
+                        }
+                        return {
+                            groups: selected_vids,
+                            max: max,
+                            max_index: max_index
+                        };
+                    };
+                    this.generateShuffle = (selected_vids) => {
+                        var list = [];
+                        var x = 0;
+                        for (var i = 0; i < selected_vids.max; i++) {
+                            for (var j = 0; j < selected_vids.groups.length; j++) {
+                                if (i < selected_vids.groups[j].length) {
+                                    list.push(selected_vids.groups[j][i]);
+                                }
+                            }
+                        }
+                        this.visible_videos = list;
+                    };
+                    this.randomShuffle = (a) => {
+                        var j, x, i;
+                        for (i = a.length; i; i--) {
+                            j = Math.floor(Math.random() * i);
+                            x = a[i - 1];
+                            a[i - 1] = a[j];
+                            a[j] = x;
+                        }
+                        return a;
+                    };
                     this.screenResize = (size = null) => {
                         var height, width;
                         if (size == null) {
@@ -131,6 +184,12 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         height = height - offset;
                         $('.panel-body[panel-type="video-panel"]').css('height', height + 'px');
                         $('.panel-body[panel-type="video-list"]').css('height', height + 'px');
+                    };
+                    this.loadVideoGroup = (data) => {
+                        var vids = $.extend(true, [], this.videos);
+                        var selected_vids = this.filterByGroups(data, vids);
+                        this.generateShuffle(selected_vids);
+                        this.toggleListView();
                     };
                 }
                 attached() {
@@ -167,8 +226,10 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         .then((rslt) => {
                         if (rslt.length <= 0)
                             return;
-                        if (data != null)
+                        if (data != null) {
+                            this.videos = rslt;
                             this.loadVideosFromList(rslt, data);
+                        }
                         else {
                             this.videos = rslt;
                             this.visible_videos = $.extend(true, [], rslt);
