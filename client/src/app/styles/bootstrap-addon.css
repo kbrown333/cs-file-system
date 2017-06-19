@@ -514,7 +514,7 @@ li.selected_track {
     margin: 0px 3px;;
 }
 
-div[panel-type="video-list"] > ul {
+div[panel-type="video-list"] > div > ul {
     list-style-type: none;
     padding: 5px;
     margin-bottom: 0px;
@@ -522,30 +522,31 @@ div[panel-type="video-list"] > ul {
     overflow: auto;
 }
 
-div[panel-type="video-list"] > ul > li {
+div[panel-type="video-list"] > div > ul > li {
     padding: 10px 5px;
     background-color: #2b2626;
     color: white;
     cursor: pointer;
+    overflow: hidden;
 }
 
-div[panel-type="video-list"] > ul > li:nth-of-type(odd) {
+div[panel-type="video-list"] > div > ul > li:nth-of-type(odd) {
     background-color: #211e1e;
 }
 
-div[panel-type="video-list"] > .srch-video-box {
+div[panel-type="video-list"] > div > .srch-video-box {
     display: none;
 }
 
-.searching[panel-type="video-list"] > .srch-video-box {
+.searching[panel-type="video-list"] > div > .srch-video-box {
     display: block !important;
 }
 
-.searching[panel-type="video-list"] > ul {
+.searching[panel-type="video-list"] > div > ul {
     max-height: 89%;
 }
 
-div[panel-type="video-list"] > .srch-video-box > input {
+div[panel-type="video-list"] > div > .srch-video-box > input {
     width: 100%;
     padding: 5px;
     margin-bottom: 10px;

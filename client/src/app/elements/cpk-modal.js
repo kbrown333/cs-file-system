@@ -63,7 +63,11 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     $(".modal-back", ('.' + this.guid)).hide();
                 }
                 apply_changes() {
-                    this.fn.mq.SendMessage({ event_name: 'onModalClose', data: this.modal_data });
+                    this.fn.mq.SendMessage({
+                        event_name: 'onModalClose',
+                        target: this.modal_data.reply_target,
+                        data: this.modal_data
+                    });
                     this.close_modal();
                 }
             };

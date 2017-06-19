@@ -175,7 +175,8 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                                 content: {
                                     title: 'Add Playlist',
                                     name: ''
-                                }
+                                },
+                                reply_target: 'music-list'
                             }
                         });
                     };
@@ -209,7 +210,8 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                                         title: 'Add Track to Playlist',
                                         playlists: this.playlists,
                                         selected: null
-                                    }
+                                    },
+                                    reply_target: 'music-list'
                                 }
                             });
                         }
@@ -361,6 +363,9 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                 }
                 attached() {
                     this.app_events = this.fn.mq.Subscribe((event) => {
+                        if (event.target != null && event.target != 'music-list') {
+                            return;
+                        }
                         if (this[event.event_name] != null) {
                             this[event.event_name](event.data);
                         }

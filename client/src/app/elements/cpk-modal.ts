@@ -65,7 +65,11 @@ export class CpkModal {
 	}
 
 	apply_changes() {
-		this.fn.mq.SendMessage({event_name: 'onModalClose', data: this.modal_data});
+		this.fn.mq.SendMessage({
+			event_name: 'onModalClose',
+			target: this.modal_data.reply_target, 
+			data: this.modal_data
+		});
 		this.close_modal();
 	}
 

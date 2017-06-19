@@ -15,16 +15,26 @@
         					<i id="btn-srch-movs" class="fa fa-search" style="cursor: pointer; padding: 3px;"
         						click.delegate="toggleSearchBox()"></i>
         				</div>
+        				<div style="display: inline-block; float: right; margin-right: 15px">
+        					<i id="btn-vid-list-view" class="fa fa-list" style="cursor: pointer; padding: 3px;"
+        						click.delegate="toggleListView()"></i>
+        				</div>
 					</div>
 					<div class="panel-body" panel-type="video-list">
-                        <div class="srch-video-box">
-                            <input type="text" placeholder="Search by Name or Path!" />
+                        <div toggle-me.two-way="visibility.videos">
+                            <div class="srch-video-box">
+                                <input type="text" placeholder="Search by Name or Path!" />
+                            </div>
+    						<ul>
+    							<li repeat.for="video of visible_videos" click.delegate="loadVideoPlayer(video, null, $index)">
+    								${video.name}
+    							</li>
+    						</ul>
                         </div>
-						<ul>
-							<li repeat.for="video of visible_videos" click.delegate="loadVideoPlayer(video, null, $index)">
-								${video.name}
-							</li>
-						</ul>
+        				<div toggle-me.two-way="visibility.list" style="display: none;">
+        					<require from="../../elements/video-list"></require>
+        					<video-list></video-list>
+        				</div>
 					</div>
 				</div>
 			</div>

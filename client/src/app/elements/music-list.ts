@@ -43,6 +43,7 @@ export class MusicList {
 
 	attached() {
 		this.app_events = this.fn.mq.Subscribe((event: any) => {
+			if (event.target != null && event.target != 'music-list') { return; }
 			if (this[event.event_name] != null) { this[event.event_name](event.data); }
 		});
 	}
@@ -188,7 +189,8 @@ export class MusicList {
 				content: {
 					title: 'Add Playlist',
 					name: ''
-				}
+				},
+				reply_target: 'music-list'
 			}
 		});
 	}
@@ -225,7 +227,8 @@ export class MusicList {
 						title: 'Add Track to Playlist',
 						playlists: this.playlists,
 						selected: null
-					}
+					},
+					reply_target: 'music-list'
 				}
 			});
 		}

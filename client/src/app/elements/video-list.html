@@ -1,0 +1,71 @@
+<template>
+    <require from="../attributes/toggle-me"></require>
+    <require from="../attributes/dbl-click"></require>
+    <require from="../attributes/one-click"></require>
+    <style>
+        .list-view-panel,
+        .list-view-panel > ul,
+        .list-view-panel > ul > li,
+        .list-view-panel > ul > li > div,
+        .list-view-panel > ul > li > div > i {
+            user-select: none;
+        }
+    </style>
+	<div class="list-view-header">
+		<div class="list-dir-buttons">
+			<i click.delegate="clickBack()" class="fa fa-arrow-left fa-2x" style="margin-top: 3px;"></i>
+		</div>
+		<div class="list-selected-panel" toggle-me.two-way="visibility.main.display">
+			<span>${view_header}</span>
+		</div>
+        <div class="list-selected-panel" toggle-me.two-way="visibility.groups.display">
+			<span>${visible_group.name}</span>
+		</div>
+		<div class="list-dir-buttons">
+			<i click.delegate="clickForward()" class="fa fa-arrow-right fa-2x" style="margin-top: 3px;"></i>
+		</div>
+	</div>
+	<!-- Main Selection Screen -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.main.display">
+        <ul class="category-list playlist-buttons">
+			<li class="playlist-header">
+				<div class="pull-right">
+					<i class="fa fa-times" toggle-me.two-way="show_delete_group"
+						click.delegate="clickDeleteGroups()"></i>
+					<i class="fa fa-plus" click.delegate="clickAddGroup()"></i>
+				</div>
+			</li>
+		</ul>
+		<ul class="category-list playlist-data">
+			<li repeat.for="group of master_list" style="padding-left: 10px; padding-right: 10px;">
+                <div class="group-container" dbl-click="event.bind: 'selectGroup'; data.bind: $index;"
+					one-click="event.bind: 'clickGroup'; data.bind: group; that: true;">
+					<p>${group.name}</p>
+					<p>Count: ${group.filter_groups.length}</p>
+				</div>
+            </li>
+		</ul>
+	</div>
+	<!-- Playlists -->
+	<div class="list-view-panel" toggle-me.two-way="visibility.groups.display">
+		<ul class="category-list playlist-buttons">
+			<li class="playlist-header">
+				<div class="pull-right">
+					<i class="fa fa-times" toggle-me.two-way="show_delete_vid_folder"
+						click.delegate="clickDeleteFilterGroups()"></i>
+					<i class="fa fa-plus" click.delegate="clickAddFilterGroup()"></i>
+                    <i class="fa fa-play" click.delegate="loadGroupInPlayer()"></i>
+				</div>
+			</li>
+		</ul>
+		<ul class="category-list">
+			<li repeat.for="item of visible_group.filter_groups"
+                one-click="event.bind: 'clickFilterGroup'; data.bind: item; that: true;">
+				<div class="group-container" style="padding-top: 10px; padding-left: 7px;">
+					<div style="display: inline-block; font-weight: bold">Identifier: </div>
+                    ${item}
+				</div>
+			</li>
+		</ul>
+	</div>
+</template>

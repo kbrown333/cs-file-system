@@ -11,6 +11,10 @@ export class VideoPlayer {
 	index: number = -1;
 	manual_load: boolean = false;
 	manual_data: any;
+	visibility: any = {
+		videos: 'show',
+		list: 'hide'
+	}
 	private vid_finished: boolean = false;
 
 	constructor(private fn: FnTs) {
@@ -42,6 +46,19 @@ export class VideoPlayer {
 		if (parms != null && parms.all_files != null) {
 			this.manual_load = true;
 			this.manual_data = parms;
+		}
+	}
+
+	toggleListView = () => {
+		if (this.visibility.videos == 'show') {
+			this.visibility.videos = 'hide';
+			this.visibility.list = 'show';
+			this.fn.mq.SendMessage({ event_name: 'resizeCategoryLists', target: 'video-list' });
+			$('#btn-vid-list-view').addClass('list-view-selected');
+		} else {
+			this.visibility.videos = 'show';
+			this.visibility.list = 'hide';
+			$('#btn-vid-list-view').removeClass('list-view-selected');
 		}
 	}
 

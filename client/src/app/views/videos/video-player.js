@@ -29,7 +29,24 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     this.now_playing = '';
                     this.index = -1;
                     this.manual_load = false;
+                    this.visibility = {
+                        videos: 'show',
+                        list: 'hide'
+                    };
                     this.vid_finished = false;
+                    this.toggleListView = () => {
+                        if (this.visibility.videos == 'show') {
+                            this.visibility.videos = 'hide';
+                            this.visibility.list = 'show';
+                            this.fn.mq.SendMessage({ event_name: 'resizeCategoryLists', target: 'video-list' });
+                            $('#btn-vid-list-view').addClass('list-view-selected');
+                        }
+                        else {
+                            this.visibility.videos = 'show';
+                            this.visibility.list = 'hide';
+                            $('#btn-vid-list-view').removeClass('list-view-selected');
+                        }
+                    };
                     this.loadVideoPlayer = (data, no_start = false, index = null) => {
                         this.changeVideo(data.path, no_start);
                         if (index != null)

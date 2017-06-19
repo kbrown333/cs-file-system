@@ -25,6 +25,13 @@ module.exports.init = function() {
 	} catch (ex) {
 		global.jsdb.music.push('/playlists', []);
 	}
+	//VIDEO DATABASE
+	global.jsdb.videos = new jsondb('jsdb/db_videos', true, false);
+	try {
+		global.jsdb.videos.getData('/groups');
+	} catch (ex) {
+		global.jsdb.videos.push('/groups', []);
+	}
 	//CONFIGURATION DATABASE
 	global.jsdb.config = new jsondb('jsdb/db_config', true, false);
 	try {
@@ -150,6 +157,33 @@ module.exports.data_context = {
 			},
 			update: function(data) {
 				apply_changes('music', '/playlists', data);
+			}
+		}
+	},
+	videos: {
+		groups: {
+			get: function() {
+				return get_data('videos', '/groups');
+			},
+			get_key: function(key) {
+				var data = get_data('videos', '/groups');
+				if (data != null) {
+					return data[key];
+				} else {
+					return null;
+				}
+			},
+			set_key: function(key, obj) {
+				var data = get_data('videos', '/groups');
+				if (data != null) {
+					data[key] = obj;
+					apply_changes('videos', '/groups', data);
+				} else {
+					return null;
+				}
+			},
+			update: function(data) {
+				apply_changes('videos', '/groups', data);
 			}
 		}
 	}
