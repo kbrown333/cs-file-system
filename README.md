@@ -30,11 +30,9 @@ Next, open the ``client`` folder in the project root and enter the following com
 ## Configuration
 You will need to do some minor command-line configuration to setup your hard drive(s). Before you go any further, take a look at our help output by opening a terminal in the project root folder and typing ``npm run help``. You should see some output that describes how to interact with our configuration CLI. Below is a copy of the output:
 
-----------------------------------------------------------------------------
-Set Config Variable: "node config.js keys [key] [value]"
+``Set Config Variable: "node config.js keys [key] [value]"
 Mount External Drive: "node config.js mount [alias] [path (blank for HD)]"
-Generate Scripts: "node config.js scripts [type]"
-----------------------------------------------------------------------------
+Generate Scripts: "node config.js scripts [type]"``
 
 
 ## Starting the Server
