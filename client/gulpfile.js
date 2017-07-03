@@ -33,20 +33,21 @@ var vendor_config = {
     }
 };
 
-//UN-COMMENT THIS TO BUILD JSPM PACKAGES INTO BUNDLE
-// gulp.task("default", ["bundle-vendor"], function () {
-//     return tsProject.src()
-//         .pipe(tsProject())
-//         .js.pipe(gulp.dest("src"));
-// });
-
-//COMMENT THIS OUT WHEN BUILDING JSPM PACKAGES
-gulp.task("default", function () {
+//BUILD JSPM PACKAGES AND CUSTOM TYPESCRIPT FILES
+gulp.task("build:all", ["bundle-vendor"], function () {
     return tsProject.src()
         .pipe(tsProject())
         .js.pipe(gulp.dest("src"));
 });
 
+//BUILD ONLY THE CUSTOM TYPESCRIPT FILES
+gulp.task("build", function () {
+    return tsProject.src()
+        .pipe(tsProject())
+        .js.pipe(gulp.dest("src"));
+});
+
+//BUILD JSPM PACKAGES ONLY
 gulp.task('bundle-vendor', function (callback) {
     return bundler.bundle(vendor_config);
 	callback();

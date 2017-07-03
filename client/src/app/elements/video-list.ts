@@ -19,10 +19,7 @@ export class VideoList {
 	show_delete_group: string = 'hide';
 
 	constructor(private fn: FnTs) {
-		this.fn.fn_Ajax({ url: '/api/videos/groups' })
-			.then((data) => {
-				this.master_list = data;
-			});
+		this.getMasterList();
 	}
 
 	attached() {
@@ -34,6 +31,19 @@ export class VideoList {
 
 	detached() {
 		this.app_events.dispose();
+	}
+
+	getMasterList = (): Promise<any> => {
+		return new Promise((res, err) => {
+			this.fn.fn_Ajax({ url: '/api/videos/groups' })
+				.then((data) => {
+					this.master_list = data;
+					res(data);
+				})
+				.catch((ex) => {
+					err(ex);
+				});
+		});
 	}
 
 	clickAddGroup = () => {
@@ -192,6 +202,7 @@ export class VideoList {
 			var height =$(window).height() - 150;
 			$('.category-list').css('max-height', height + "px");
 			$('.playlist-data').css('max-height', (height - 40) + "px");
+			$('.filter-group-data').css('max-height', (height - 132) + "px");
 		}, 50);
 	}
 

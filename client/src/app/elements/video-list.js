@@ -36,6 +36,18 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                     this.selected_filter_groups = [];
                     this.show_delete_vid_folder = 'hide';
                     this.show_delete_group = 'hide';
+                    this.getMasterList = () => {
+                        return new Promise((res, err) => {
+                            this.fn.fn_Ajax({ url: '/api/videos/groups' })
+                                .then((data) => {
+                                this.master_list = data;
+                                res(data);
+                            })
+                                .catch((ex) => {
+                                err(ex);
+                            });
+                        });
+                    };
                     this.clickAddGroup = () => {
                         this.fn.mq.SendMessage({
                             event_name: 'showModal',
@@ -189,6 +201,7 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                             var height = $(window).height() - 150;
                             $('.category-list').css('max-height', height + "px");
                             $('.playlist-data').css('max-height', (height - 40) + "px");
+                            $('.filter-group-data').css('max-height', (height - 132) + "px");
                         }, 50);
                     };
                     this.selectGroup = (index) => {
@@ -235,10 +248,7 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                                 break;
                         }
                     };
-                    this.fn.fn_Ajax({ url: '/api/videos/groups' })
-                        .then((data) => {
-                        this.master_list = data;
-                    });
+                    this.getMasterList();
                 }
                 attached() {
                     this.app_events = this.fn.mq.Subscribe((event) => {

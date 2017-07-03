@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Cloudspire Technology",
+  "author": "IoT Shaman",
   "license": "MIT",
   "devDependencies": {
     "gulp": "^3.9.1",
