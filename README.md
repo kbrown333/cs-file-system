@@ -1,4 +1,4 @@
-# IoT Shaman - Node JS / Aurelia Framework
+# IoT Shaman - Raspberry Pi File System / Media Server
 
 Turn your existing external hard-drives into a wireless file-system / media server! All you need is a Raspberry Pi (or any other linux box) and some form of storage device (flash drive, external hard drive, etc). Use the file system to add / delete / copy / paste files. Copy files from 1 hard drive to another! Use the media server to listen to your local music files and watch your local video files. Music and Video players contain all sorts of features, including video / music shuffle, searching across multiple drives, mp3 Tag reader, and more!
 
@@ -27,8 +27,18 @@ Next, open the ``client`` folder in the project root and enter the following com
 - jspm install -y
 - typing install
 
+## Configuration
+You will need to do some minor command-line configuration to setup your hard drive(s). Before you go any further, take a look at our help output by opening a terminal in the project root folder and typing ``npm run help``. You should see some output that describes how to interact with our configuration CLI. Below is a copy of the output:
+
+----------------------------------------------------------------------------
+Set Config Variable: "node config.js keys [key] [value]"
+Mount External Drive: "node config.js mount [alias] [path (blank for HD)]"
+Generate Scripts: "node config.js scripts [type]"
+----------------------------------------------------------------------------
+
+
 ## Starting the Server
-To run, open the project's root folder in a terminal and type ``npm start``. it will run on port 3000 by default.
+To run, open the project's root folder in a terminal and type ``npm start``. The application will run on port 3000 by default.
 
 ## Accessing the Application
 To open the app, all you need to do is open a browser and go to the following URL: ``http://localhost:3000``.
