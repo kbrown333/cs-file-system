@@ -50,7 +50,7 @@ function add_drive(arr) {
 		return;
 	}
 	if (config.drives == null) { config.drives = []; }
-
+	fs.ensureDirSync(__dirname + '/dev/');
 	var success = true, type, path, create;
 	if (arr.length == 1) {
 		type = 'sda';
