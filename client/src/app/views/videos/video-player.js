@@ -203,6 +203,17 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         this.vid_finished = true;
                         setTimeout(() => { this.next(); }, 5000);
                     }, false);
+                    $('body').keyup((event) => {
+                        if (event.which == 32) {
+                            let player = document.getElementById('vid_player');
+                            if (player.paused) {
+                                player.play();
+                            }
+                            else {
+                                player.pause();
+                            }
+                        }
+                    });
                     if (this.manual_load) {
                         this.getVideoList(this.manual_data);
                     }

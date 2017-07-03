@@ -31,6 +31,16 @@ export class VideoPlayer {
 			this.vid_finished = true;
 			setTimeout(() => { this.next(); }, 5000);
 		}, false);
+		$('body').keyup((event: JQueryKeyEventObject) => {
+			if (event.which == 32) {
+				let player: HTMLVideoElement = <HTMLVideoElement>document.getElementById('vid_player');
+				if (player.paused) {
+					player.play();
+				} else {
+					player.pause();
+				}
+			}
+		});
 		if (this.manual_load) {
 			this.getVideoList(this.manual_data);
 		} else {
