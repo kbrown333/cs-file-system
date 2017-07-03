@@ -36,28 +36,14 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                         show_loader: 'hide',
                         show_content: 'show'
                     };
-                    this.refreshFileIndexes = () => {
-                        this.show_loader();
-                        this.fn.fn_Ajax({ url: '/api/files/index' })
-                            .then(() => {
-                            this.show_content();
-                        })
-                            .catch((err) => {
-                            console.log(err);
-                            this.show_content();
-                        });
+                    this.toggle_aside = () => {
+                        $(".hide-aside").toggle();
                     };
                     this.loadRoute = (route, parms = null) => {
                         this.router.navigateToRoute(route, parms);
                     };
                     this.toggle_header = () => {
                         $(".collapse").toggle();
-                    };
-                    this.toggle_aside = () => {
-                        this.session.visibility.aside = 'stage';
-                        setTimeout(() => {
-                            this.session.visibility.aside = 'slide';
-                        }, 10);
                     };
                     this.displayToast = (msg) => {
                         this.toast_msg = msg;
@@ -70,6 +56,17 @@ System.register(["aurelia-framework", "aurelia-router", "./models/session", "./m
                     };
                     this.loadVideoFiles = (data) => {
                         this.loadRoute('videos', data);
+                    };
+                    this.refreshFileIndexes = () => {
+                        this.show_loader();
+                        this.fn.fn_Ajax({ url: '/api/files/index' })
+                            .then(() => {
+                            this.show_content();
+                        })
+                            .catch((err) => {
+                            console.log(err);
+                            this.show_content();
+                        });
                     };
                     this.loadRouter();
                     this.loadEventListener();

@@ -43,6 +43,10 @@ aside {
     border-right: 1px solid #505050;
 }
 
+.hide-aside {
+    display: none;
+}
+
 .menu_row {
     white-space: nowrap;
     margin-bottom: 0px !important;

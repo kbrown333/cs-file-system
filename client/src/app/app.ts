@@ -57,16 +57,8 @@ export class App {
 		this.nav.show_content = 'show';
 	}
 
-    refreshFileIndexes = () => {
-        this.show_loader();
-        this.fn.fn_Ajax({url: '/api/files/index'})
-            .then(() => {
-                this.show_content();
-            })
-            .catch((err) => {
-                console.log(err);
-                this.show_content();
-            });
+    toggle_aside = () => {
+        $(".hide-aside").toggle();
     }
 
     //APP EVENTS
@@ -76,13 +68,6 @@ export class App {
 
     toggle_header = () => {
         $(".collapse").toggle();
-    }
-
-    toggle_aside = () => {
-        this.session.visibility.aside = 'stage';
-        setTimeout(() => {
-            this.session.visibility.aside = 'slide';
-        }, 10);
     }
 
     private handleResize(): void {
@@ -114,4 +99,16 @@ export class App {
     loadVideoFiles = (data: any) => {
 		this.loadRoute('videos', data);
 	}
+
+    refreshFileIndexes = () => {
+        this.show_loader();
+        this.fn.fn_Ajax({url: '/api/files/index'})
+            .then(() => {
+                this.show_content();
+            })
+            .catch((err) => {
+                console.log(err);
+                this.show_content();
+            });
+    }
 }

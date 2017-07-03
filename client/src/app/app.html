@@ -16,10 +16,6 @@
                 <a class="navbar-brand" href="#" style="float: right;" click.delegate="clickOpenMusicPlayer()">
                     <i class="fa fa-music"></i>
                 </a>
-                <a class="navbar-brand" href="#" style="float: right; margin-right: 15px;"
-                 click.delegate="refreshFileIndexes()">
-                    <i class="fa fa-refresh"></i>
-                </a>
             </div>
         </div>
         <div class="collapse navbar-collapse" id="navbar">
@@ -37,10 +33,6 @@
              click.delegate="clickOpenMusicPlayer()">
                 <i class="fa fa-music"></i>
             </a>
-            <a class="navbar-brand show_on_monitor" href="#" style="float: right; margin-right: 15px;"
-             click.delegate="refreshFileIndexes()">
-                <i class="fa fa-refresh"></i>
-            </a>
         </div>
     </nav>
     <require from="./elements/music-player"></require>
@@ -48,11 +40,13 @@
     <music-player></music-player>
     <div class="page-host" toggle-me.two-way="nav.show_content">
         <require from="./elements/cpk-modal"></require>
+        <require from="./elements/aside"></require>
         <cpk-modal modal="edit_fname" view="./modal/edit-fname"></cpk-modal>
         <cpk-modal modal="add_folder" view="./modal/add-folder"></cpk-modal>
         <cpk-modal modal="add_playlist" view="./modal/add-playlist"></cpk-modal>
         <cpk-modal modal="select_playlist" view="./modal/select-playlist"></cpk-modal>
         <cpk-modal modal="add_filter_group" view="./modal/add-filter-group"></cpk-modal>
+        <aside class="hide-aside"></aside>
         <router-view class="app-content"></router-view>
     </div>
     <div class="page-host" toggle-me.two-way="nav.show_loader">

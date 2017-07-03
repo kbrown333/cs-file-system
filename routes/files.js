@@ -57,6 +57,7 @@ router.post('/upload', function(req, res) {
 		} else {
 			var build = dbcontext.build.get_key(drive.name);
 			csfs.build_manager.insert(drive.name, build, add_path, rslt);
+			csfs.get_list(() => {}, true);
 			csfs.get_object(function(err2, rslt2) {
 				if (err) {
 					res.status(500).send(err2);
