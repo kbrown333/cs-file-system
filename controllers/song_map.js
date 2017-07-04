@@ -4,7 +4,8 @@ var __ = require('underscore');
 var path = require('path');
 var id3_reader = require('jsmediatags');
 
-module.exports.map = function(callback) {
+module.exports.map = function(callback, nocache) {
+	if (nocache == null) { nocache = false; }
 	csfs.get_list((err, content) => {
 		if (err) {return;}
 		var music_db = dbcontext.music.songs;
@@ -17,7 +18,7 @@ module.exports.map = function(callback) {
 			dbcontext.music.songs.update(rslt);
 			if (callback != null) { callback(rslt); }
 		});
-	});
+	}, nocache);
 }
 
 function getFileList(content, db, root) {

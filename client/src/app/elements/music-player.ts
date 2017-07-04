@@ -344,6 +344,13 @@ export class MusicPlayer {
 		}
 	}
 
+	reloadMusicPanel = (map: any) => {
+		var data = this.generateBindableList({map: map});
+		this.master_list = data.list;
+		this.master_map = data.map;
+		this.loadPlayer(data);
+	}
+
 	screenResize = (size: any = null): void => {
 		if (this.player != null) {
 			this.player.empty();

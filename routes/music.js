@@ -8,9 +8,10 @@ router.get('/songs', function(req, res) {
 });
 
 router.get('/map', function(req, res) {
+	var nocache = req.query.nocache ? true : false;
 	mapper.map(function(rslt) {
 		res.json(rslt);
-	});
+	}, nocache);
 });
 
 router.get('/playlists', function(req, res) {

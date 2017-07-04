@@ -287,6 +287,12 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                                 .then(() => { this.loaded = true; });
                         }
                     };
+                    this.reloadMusicPanel = (map) => {
+                        var data = this.generateBindableList({ map: map });
+                        this.master_list = data.list;
+                        this.master_map = data.map;
+                        this.loadPlayer(data);
+                    };
                     this.screenResize = (size = null) => {
                         if (this.player != null) {
                             this.player.empty();

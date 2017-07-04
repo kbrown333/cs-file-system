@@ -31,6 +31,14 @@ export class Aside {
 		this.fn.mq.SendMessage({event_name: 'refreshFileIndexes', target: 'app'})
 	}
 
+	refreshMusic = () => {
+		this.hideMe();
+		this.fn.fn_Ajax({url: '/api/music/map?nocache=true'})
+			.then((rslt) => {
+				this.fn.mq.SendMessage({event_name: 'reloadMusicPanel', target: 'music-player', data: rslt});
+			});
+	}
+
 	//Event Aggregator Functions
 
 

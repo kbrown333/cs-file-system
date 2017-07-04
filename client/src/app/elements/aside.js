@@ -28,6 +28,13 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                         this.hideMe();
                         this.fn.mq.SendMessage({ event_name: 'refreshFileIndexes', target: 'app' });
                     };
+                    this.refreshMusic = () => {
+                        this.hideMe();
+                        this.fn.fn_Ajax({ url: '/api/music/map?nocache=true' })
+                            .then((rslt) => {
+                            this.fn.mq.SendMessage({ event_name: 'reloadMusicPanel', target: 'music-player', data: rslt });
+                        });
+                    };
                 }
                 attached() {
                     this.app_events = this.fn.mq.Subscribe((event) => {

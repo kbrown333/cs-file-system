@@ -78,4 +78,4 @@ global.default_cache = new NodeCache();
 //MAP MUSIC TO DATABASE
 require('./controllers/song_map').map(() => {
     console.log('Songs have been mapped');
-});
+}, true);
