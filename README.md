@@ -28,6 +28,8 @@ Next, open the ``client`` folder in the project root and enter the following com
 - typing install
 
 ## Configuration
+
+### Configuring Hard Drives
 You will need to do some minor command-line configuration to setup your hard drive(s). Before you go any further, take a look at our help output by opening a terminal in the project root folder and typing ``npm run help``. You should see some output that describes how to interact with our configuration CLI. Below is a copy of the output:
 
 ```
@@ -36,7 +38,7 @@ Mount External Drive: "node config.js mount [alias] [path (blank for HD)]"
 Generate Scripts: "node config.js scripts [type]"
 ```
 
-The most important command to note is the "mount" command, which will create a database entry for your external hard drives. Before continuing, please make sure to plug at least 1 extneral hard drive into your linux machine. 
+The most important command to note is the "mount" command, which will create a database entry for your external hard drives. Before continuing, please make sure to plugin at least 1 extneral hard drive into your linux machine. 
 
 To set your hard drive up with the system, enter the following command (replacing 'my-drive' with whatever name you want).
 
@@ -48,8 +50,27 @@ You can also have the server load a directory (recursively) on your linux machin
 
 IMPORTANT NOTE: do not inlcude spaces in your mount aliases, this could potentially cause problems with the server.
 
+### Generating Startup Scripts
+If you want your Raspberry Pi or other linux machine to start the server and mount the hard drive(s) when booting up, then you will want to perform a few additional steps. Open a terminal in the project's root folder and enter the following commands:
+
+```
+node config.js scripts startup
+cd scripts/startup
+sudo chmod 755 ./cpk_init.sh
+sudo chmod 755 ./mount_drives.sh
+```
+
+The first command will generate the necessary startup scripts and place them in the ``scripts/startup`` folder. The following commands will give these scripts permissions so they can be executed. Once this is complete, we want to set these up to run whenever the device is started. In your terminal, open the file ``/etc/rc.local`` in a text editor and add the following lines of code at the end (replacing the path with your servers local path):
+
+```
+/home/user/path/to/app/cs-file-system/scripts/startup/cpk_init.sh &
+/home/user/path/to/app/cs-file-system/scripts/startup/mount_drives.sh &
+```
+
+Close and save the file. Now all you need to do is restart your device and when it loads your server should be available!
+
 ## Starting the Server
-To run, open the project's root folder in a terminal and type ``npm start``. The application will run on port 3000 by default.
+To start the server manually, open the project's root folder in a terminal and type ``npm start``. The application will run on port 3000 by default.
 
 ## Accessing the Application
 To open the app, all you need to do is open a browser and go to the following URL: ``http://localhost:3000``.
