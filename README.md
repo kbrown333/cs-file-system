@@ -16,9 +16,9 @@ Before building this project you will need to following resources:
 - jspm
 - typings
 
-* JSPM and Typings can both be installed using npm.
+NOTE: JSPM and Typings can both be installed using npm.
 
-## Instalation
+## Installation
 First, open the project's root folder in a terminal and type ``npm install``
 
 Next, open the ``client`` folder in the project root and enter the following commands:
