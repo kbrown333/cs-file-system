@@ -21,11 +21,16 @@ switch (args.cmd) {
 		break;
 	case 'mount':
 		if (args.alias == null) err_msg = '"alias" argument must be provided for command "mount"';
-		if (args.uuid == null) err_msg = '"uuid" argument must be provided form command "mount"';
-		break;
-	case 'link':
-		if (args.alias == null) err_msg = '"alias" argument must be provided for command "link"';
-		if (args.path == null) err_msg = '"path" argument must be provided for command "link"';
+		else if (args.type == null) err_msg = '"type" argument must be provided for command "mount"';
+		else {
+			if (args.type == "sym") {
+				if (args.path == null) err_msg = '"path" argument must be provided for command "mount" (type "sym")';
+			} else if (args.type == "hd") {
+				if (args.uuid == null) err_msg = '"uuid" argument must be provided form command "mount" (type "hd")';
+			} else {
+				err_msg = 'invalid "type" value for command "mount"';
+			}
+		}
 		break;
 	case 'scripts':
 		if (args.type == null) err_msg = '"type" argument must be provided for command "scripts"';
@@ -45,10 +50,7 @@ switch (args.cmd) {
 		set_config_parm(args.key, args.value); return;
 		break;
 	case "mount":
-		add_drive("hd", args.alias, null, args.uuid); return;
-		break;
-	case "link":
-		add_drive("sym", args.alias, args.path); return;
+		add_drive(args.type, args.alias, args.path, args.uuid); return;
 		break;
 	case "scripts":
 		generate_scripts(args.type); return;

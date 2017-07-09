@@ -27,8 +27,9 @@ function startup_scripts(drives) {
 		var mount_script = bash_prefix.slice(0);
 		if (drives.length > 0) {
 			for (var i = 0; i < drives.length; i++) {
-				if (drives[i].type == "sda") {
-					mount_script += mount.replace("{{index}}", i+1).replace("{{path}}", drives[i].path);
+				if (drives[i].type == "sda" && drives[i].uuid != null) {
+					mount_script += mount_uuid.replace("{{index}}", i+1)
+						.replace("{{uuid}}", drives[i].uuid).replace("{{path}}", drives[i].path);
 					mount_script += '\r\n';
 				}
 			}
@@ -60,3 +61,4 @@ cd {{path}}
 node index.js >> output-log.txt`;
 
 var mount = 'mount /dev/sda{{index}} {{path}}';
+var mount_uuid = 'mount -U {{uuid}} {{path}}';
