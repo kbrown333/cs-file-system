@@ -1,5 +1,6 @@
 var fs = require('fs-extra');
 var __ = require('underscore');
+var path_module = require('path');
 
 module.exports.generate = function(type, data) {
 	switch(type) {
@@ -28,8 +29,7 @@ function startup_scripts(drives) {
 		if (drives.length > 0) {
 			for (var i = 0; i < drives.length; i++) {
 				if (drives[i].type == "sda" && drives[i].uuid != null) {
-					mount_script += mount_uuid.replace("{{index}}", i+1)
-						.replace("{{uuid}}", drives[i].uuid).replace("{{path}}", drives[i].path);
+					mount_script += mScript(i, drives[i].path, drives[i].uuid);
 					mount_script += '\r\n';
 				}
 			}
@@ -43,6 +43,15 @@ function startup_scripts(drives) {
 	} else {
 		finished();
 	}
+}
+
+function mScript(i, path, uuid) {
+	var safe_path = lastCharacter(path) == "/" ? path.substring(0, path.length - 1) : path;
+	return mount_uuid.replace("{{uuid}}", uuid).replace("{{path}}", safe_path);
+}
+
+function lastCharacter(str) {
+	return str.slice(-1);
 }
 
 //HARD-CODED TEMPLATE STRINGS
