@@ -33,20 +33,43 @@ Next, open the ``client`` folder in the project root and enter the following com
 You will need to do some minor command-line configuration to setup your hard drive(s). Before you go any further, take a look at our help output by opening a terminal in the project root folder and typing ``npm run help``. You should see some output that describes how to interact with our configuration CLI. Below is a copy of the output:
 
 ```
-Set Config Variable: "node config.js keys [key] [value]"
-Mount External Drive: "node config.js mount [alias] [path (blank for HD)]"
-Generate Scripts: "node config.js scripts [type]"
+FORMAT: node config.js --cmd command-name [command arguments]
+EXAMPLE: node config.js --cmd keys --key cache --value off
+
+COMMAND ("--cmd") ARGUMENT VALUES:
+[1]: keys: sets the value of a config variable
+[2]: mount: register external storage device
+[3]: link: generate / register symlink
+[4]: scripts: generate system scripts
+
+ARGUMENTS FOR AVILABLE COMMANDS:
+command-name: "keys"
+[1]: --key [name of json key]
+[2]: --value [value to store]
+command-name: "mount"
+[1]: --alias [display name]
+[2]: --uuid [uuid of storage device]
+command-name: "link"
+[1]: --alias [display name]
+[2]: --path [absolute path of folder]
+command-name: "scripts"
+[1]: --type [script group to generate]
+[!] NOTE: ONLY AVAILABLE VALUE IS "startup" (for now)
 ```
 
-The most important command to note is the "mount" command, which will create a database entry for your external hard drives. Before continuing, please make sure to plugin at least 1 extneral hard drive into your linux machine. 
+The most important command to note is the "mount" command, which will create a database entry for your external hard drives. Before continuing, please make sure to plugin at least 1 extneral hard drive into your linux machine.
 
-To set your hard drive up with the system, enter the following command (replacing 'my-drive' with whatever name you want).
+To set your hard drive up with the system, you first need to find the uuid of your external hard drive. The easiest way I have found to locate the uuid is to enter the following command into a terminal:
 
-``node config.js mount my-drive``
+``sudo blkid /dev/sd*``
+
+This will print out a list of all attached storage devices providing the device name, uuid, as well as other info. Look  through the list and find the uuid matching your device's name ("LABEL" value). Using this value, open a terminal in the project's root folder and enter the following command (replacing values in braces with actual values):
+
+``node config.js --cmd mount --alias [display name] --uuid [uuid]``
 
 You can also have the server load a directory (recursively) on your linux machine. To accomplish this, enter the following command (replacing 'my-folder' with an alias and /home/pi/Videos with the folder path you want to mount):
 
-``node config.js mount my-folder /home/pi/Videos``
+``node config.js --cmd link --alias my-folder --path /home/pi/Videos``
 
 IMPORTANT NOTE: do not inlcude spaces in your mount aliases, this could potentially cause problems with the server.
 
@@ -54,7 +77,7 @@ IMPORTANT NOTE: do not inlcude spaces in your mount aliases, this could potentia
 If you want your Raspberry Pi or other linux machine to start the server and mount the hard drive(s) when booting up, then you will want to perform a few additional steps. Open a terminal in the project's root folder and enter the following commands:
 
 ```
-node config.js scripts startup
+node config.js --cmd scripts --type startup
 cd scripts/startup
 sudo chmod 755 ./cpk_init.sh
 sudo chmod 755 ./mount_drives.sh

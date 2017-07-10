@@ -47,7 +47,7 @@ function startup_scripts(drives) {
 
 function mScript(i, path, uuid) {
 	var safe_path = lastCharacter(path) == "/" ? path.substring(0, path.length - 1) : path;
-	return mount_uuid.replace("{{uuid}}", uuid).replace("{{path}}", safe_path);
+	return mount_uuid.replace(/{{uuid}}/g, uuid).replace("{{path}}", path).replace("{{safe_path}}", safe_path);
 }
 
 function lastCharacter(str) {
@@ -69,5 +69,6 @@ export PATH=/usr/local/bin:$PATH
 cd {{path}}
 node index.js >> output-log.txt`;
 
-var mount = 'mount /dev/sda{{index}} {{path}}';
-var mount_uuid = 'mount -U {{uuid}} {{path}}';
+var mount_uuid =
+`mount -U {{uuid}} {{path}} ||
+mount -U {{uuid}} {{safe_path}}`;
