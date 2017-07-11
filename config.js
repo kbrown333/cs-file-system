@@ -51,7 +51,7 @@ switch (args.cmd) {
 		add_drive("sym", args.alias, args.path); return;
 		break;
 	case "scripts":
-		generate_scripts(args.type); return;
+		generate_scripts(args.type, db_context.svr_config.get_key('media_root')); return;
 		break;
 	default:
 		console.warn('Invalid "cmd" command'); return;
@@ -103,16 +103,16 @@ function add_drive(type, alias, path, uuid) {
 
 	if (success) {
 		db_context.svr_config.update(svr_config);
-		scripts.generate('startup', svr_config.drives);
+		scripts.generate('startup', media_root, svr_config.drives);
 		console.log('External drive "' + alias + '" is now configured.');
 		console.log('For new drives to be available, please restart device.')
 	}
 }
 
-function generate_scripts(type) {
+function generate_scripts(type, media_root) {
 	switch(type) {
 		case "startup":
-			scripts.generate('startup', db_context.svr_config.get_key('drives'));
+			scripts.generate('startup', media_root, db_context.svr_config.get_key('drives'));
 			break;
 		default:
 			console.log('Script type "' + type + '" not found.')
