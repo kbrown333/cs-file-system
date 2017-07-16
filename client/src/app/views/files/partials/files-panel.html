@@ -22,7 +22,8 @@
 			<div class="panel panel-danger">
 				<div class="panel-heading">
 					<div style="display: inline-block; margin-right: 7px;">
-						<i class="fa fa-table"></i>
+						<i class="fa fa-check-circle" show.bind="is_root || offline_drives.indexOf(current_drive) == -1"></i>
+                        <i class="fa fa-exclamation-triangle" show.bind="!is_root && offline_drives.indexOf(current_drive) != -1"></i>
 					</div>
 					<div style="display: inline-block;">
 						<h3 if.bind="display_path == ''" class="panel-title">${current_path}</h3>

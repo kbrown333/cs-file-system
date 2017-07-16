@@ -28,6 +28,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 constructor(fn, session) {
                     this.fn = fn;
                     this.session = session;
+                    this.offline_drives = [];
                     this.directory = {};
                     this.orig_directory = {};
                     this.is_root = true;
@@ -45,6 +46,11 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                     };
                     this.draggable_loaded = false;
                     this.reduce_path = (a, b) => { return a + '/' + b; };
+                    this.getFiles = () => {
+                        this.fn.fn_Ajax({ url: this.ajax_path })
+                            .then((rslt) => { this.orig_directory = rslt; this.directory = rslt; return rslt; })
+                            .then(this.loadAllData);
+                    };
                     this.loadAllData = (data) => {
                         return new Promise((res, err) => {
                             Promise.resolve(data)
@@ -210,7 +216,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                     };
                 }
                 attached() {
-                    this.getFiles();
+                    this.getDriveStatus().then(this.getFiles);
                     this.app_events = this.fn.mq.Subscribe((event) => {
                         if (event.target != null && event.target != 'files-panel') {
                             return;
@@ -245,10 +251,12 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                     this.nav.show_loader = 'hide';
                     this.nav.show_files = 'show';
                 }
-                getFiles() {
-                    this.fn.fn_Ajax({ url: this.ajax_path })
-                        .then((rslt) => { this.orig_directory = rslt; this.directory = rslt; return rslt; })
-                        .then(this.loadAllData);
+                getDriveStatus() {
+                    return new Promise((res, err) => {
+                        this.fn.fn_Ajax({ url: '/api/status/drives' })
+                            .then((status) => { this.offline_drives = status.offline; res(status); })
+                            .catch(err);
+                    });
                 }
                 getDirectory(data) {
                     if (data.current_path == "/") {
@@ -273,7 +281,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                             files = dir['_files_'];
                         }
                         for (var obj in dir) {
-                            if (obj != '_files_') {
+                            if (obj != '_files_' && obj != '_tags_') {
                                 folders.push(obj);
                             }
                         }

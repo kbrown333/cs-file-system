@@ -12,6 +12,7 @@ export class FilesPanel {
 	app_events: any;
 	ajax_path: any;
 	files: any;
+	offline_drives: any = [];
 	directory: any = {};
 	orig_directory: any = {};
 	current_path: string;
@@ -39,7 +40,7 @@ export class FilesPanel {
 	}
 
 	attached() {
-		this.getFiles();
+		this.getDriveStatus().then(this.getFiles);
 		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
             if (event.target != null && event.target != 'files-panel') { return; }
             if (this[event.event_name] != null) { this[event.event_name](event.data); }
@@ -70,7 +71,15 @@ export class FilesPanel {
 		this.nav.show_files = 'show';
 	}
 
-	getFiles() {
+	getDriveStatus() {
+		return new Promise((res, err) => {
+			this.fn.fn_Ajax({url: '/api/status/drives'})
+				.then((status) => { this.offline_drives = status.offline; res(status); })
+				.catch(err);
+		});
+	}
+
+	getFiles = () => {
 		this.fn.fn_Ajax({url: this.ajax_path})
 			.then((rslt) => {this.orig_directory = rslt; this.directory = rslt; return rslt;})
 			.then(this.loadAllData);
@@ -117,7 +126,7 @@ export class FilesPanel {
 		if (dir != null) {
 			if (dir['_files_'] != null) { files = dir['_files_']; }
 			for (var obj in dir) {
-				if (obj != '_files_') {
+				if (obj != '_files_' && obj != '_tags_') {
 					folders.push(obj);
 				}
 			}

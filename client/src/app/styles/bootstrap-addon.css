@@ -131,6 +131,12 @@ input.form-control {
 .fa-file {
     color: white;
 }
+.panel-heading i.fa-check-circle {
+    color: #77B300;
+}
+.panel-heading i.fa-exclamation-triangle {
+    color: yellow;
+}
 .selected_block {
     background-color: blue;
 }
