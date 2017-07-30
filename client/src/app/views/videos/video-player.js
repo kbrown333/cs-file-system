@@ -36,6 +36,8 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     this.shuffle_single = false;
                     this.shuffle_passes = 3;
                     this.vid_finished = false;
+                    this.shuffle_mode = false;
+                    this.shuffle_name = '';
                     this.toggleListView = () => {
                         if (this.visibility.videos == 'show') {
                             this.visibility.videos = 'hide';
@@ -78,8 +80,18 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         if (video_files.length > 0) {
                             this.index = index;
                             this.visible_videos = $.extend(true, [], video_files);
-                            this.loadVideoPlayer(video_files[index], true);
+                            this.loadVideoPlayer(video_files[index], false);
                         }
+                    };
+                    this.loadFromShuffleHistory = () => {
+                        var shuffle_str = localStorage[this.shuffle_name];
+                        if (shuffle_str == null) {
+                            return;
+                        }
+                        var shuffle = JSON.parse(shuffle_str);
+                        this.visible_videos = shuffle.videos;
+                        this.index = shuffle.index;
+                        this.next();
                     };
                     this.changeVideo = (link, no_start = false) => {
                         var player = document.getElementById('vid_player');
@@ -97,11 +109,26 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         if (this.index > -1 && this.index < this.visible_videos.length - 1) {
                             this.loadVideoPlayer(this.visible_videos[++this.index]);
                         }
+                        if (this.shuffle_mode) {
+                            this.updateShuffleHistory();
+                        }
                     };
                     this.prev = () => {
                         if (this.index > 0) {
                             this.loadVideoPlayer(this.visible_videos[--this.index]);
                         }
+                        if (this.shuffle_mode) {
+                            this.updateShuffleHistory();
+                        }
+                    };
+                    this.updateShuffleHistory = () => {
+                        var shuffle_str = localStorage[this.shuffle_name];
+                        if (shuffle_str == null) {
+                            return;
+                        }
+                        var shuffle = JSON.parse(shuffle_str);
+                        shuffle.index = this.index;
+                        localStorage[this.shuffle_name] = JSON.stringify(shuffle);
                     };
                     this.toggleSearchBox = () => {
                         $('.panel-body[panel-type="video-list"]').toggleClass('searching');
@@ -158,7 +185,7 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                                 }
                             }
                         }
-                        this.visible_videos = list;
+                        return list;
                     };
                     this.randomShuffle = (a) => {
                         var j, x, i;
@@ -187,8 +214,24 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     };
                     this.loadVideoGroup = (data) => {
                         var vids = $.extend(true, [], this.videos);
-                        var selected_vids = this.filterByGroups(data, vids);
-                        this.generateShuffle(selected_vids);
+                        this.shuffle_mode = true;
+                        this.shuffle_name = data.name;
+                        var selected_vids = this.filterByGroups(data.filter_groups, vids);
+                        var shuffle = this.generateShuffle(selected_vids);
+                        this.visible_videos = shuffle;
+                        localStorage[data.name] = JSON.stringify({
+                            index: 0,
+                            videos: shuffle
+                        });
+                        history.replaceState(undefined, undefined, '#/videos?shuffle=' + data.name.replace(/ /g, '%20'));
+                        this.loadVideoPlayer(shuffle[0], false, 0);
+                        this.toggleListView();
+                    };
+                    this.reloadVideoGroup = (name) => {
+                        this.shuffle_mode = true;
+                        this.shuffle_name = name;
+                        history.replaceState(undefined, undefined, '#/videos?shuffle=' + name.replace(/ /g, '%20'));
+                        this.loadFromShuffleHistory();
                         this.toggleListView();
                     };
                 }
@@ -203,17 +246,6 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         this.vid_finished = true;
                         setTimeout(() => { this.next(); }, 5000);
                     }, false);
-                    $('body').keyup((event) => {
-                        if (event.which == 32) {
-                            let player = document.getElementById('vid_player');
-                            if (player.paused) {
-                                player.play();
-                            }
-                            else {
-                                player.pause();
-                            }
-                        }
-                    });
                     if (this.manual_load) {
                         this.getVideoList(this.manual_data);
                     }
@@ -227,9 +259,15 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                     this.app_events.dispose();
                 }
                 activate(parms = null) {
-                    if (parms != null && parms.all_files != null) {
-                        this.manual_load = true;
-                        this.manual_data = parms;
+                    if (parms != null) {
+                        if (parms.all_files != null) {
+                            this.manual_load = true;
+                            this.manual_data = parms;
+                        }
+                        else if (parms.shuffle != null) {
+                            this.shuffle_mode = true;
+                            this.shuffle_name = parms.shuffle;
+                        }
                     }
                 }
                 getVideoList(data = null) {
@@ -240,6 +278,10 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         if (data != null) {
                             this.videos = rslt;
                             this.loadVideosFromList(rslt, data);
+                        }
+                        else if (this.shuffle_mode) {
+                            this.videos = rslt;
+                            this.loadFromShuffleHistory();
                         }
                         else {
                             this.videos = rslt;

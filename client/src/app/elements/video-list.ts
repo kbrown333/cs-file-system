@@ -17,6 +17,7 @@ export class VideoList {
 	selected_filter_groups: any = [];
 	show_delete_vid_folder: string = 'hide';
 	show_delete_group: string = 'hide';
+	group_reload: boolean = false;
 
 	constructor(private fn: FnTs) {
 		this.getMasterList();
@@ -114,7 +115,16 @@ export class VideoList {
 		this.fn.mq.SendMessage({
 			event_name: 'loadVideoGroup',
 			target: 'video-player',
-			data: this.visible_group.filter_groups
+			data: this.visible_group
+		});
+	}
+
+	reloadGroupInPlayer = () => {
+		if (this.visible_group.filter_groups.length == 0) {return;}
+		this.fn.mq.SendMessage({
+			event_name: 'reloadVideoGroup',
+			target: 'video-player',
+			data: this.visible_group.name
 		});
 	}
 
@@ -208,6 +218,7 @@ export class VideoList {
 
 	selectGroup = (index: number) => {
 		this.visible_group = this.master_list[index];
+		this.group_reload = localStorage[this.visible_group.name] != null;
 		this.togglePanelBody();
 	}
 

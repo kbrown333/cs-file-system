@@ -18,6 +18,8 @@ export class VideoPlayer {
 	shuffle_single: boolean = false;
 	shuffle_passes: number = 3;
 	private vid_finished: boolean = false;
+	private shuffle_mode: boolean = false;
+	private shuffle_name: string = '';
 
 	constructor(private fn: FnTs) {
 	}
@@ -31,16 +33,6 @@ export class VideoPlayer {
 			this.vid_finished = true;
 			setTimeout(() => { this.next(); }, 5000);
 		}, false);
-		$('body').keyup((event: JQueryKeyEventObject) => {
-			if (event.which == 32) {
-				let player: HTMLVideoElement = <HTMLVideoElement>document.getElementById('vid_player');
-				if (player.paused) {
-					player.play();
-				} else {
-					player.pause();
-				}
-			}
-		});
 		if (this.manual_load) {
 			this.getVideoList(this.manual_data);
 		} else {
@@ -55,9 +47,14 @@ export class VideoPlayer {
 	}
 
 	activate(parms:any = null) {
-		if (parms != null && parms.all_files != null) {
-			this.manual_load = true;
-			this.manual_data = parms;
+		if (parms != null) {
+			if (parms.all_files != null) {
+				this.manual_load = true;
+				this.manual_data = parms;
+			} else if (parms.shuffle != null) {
+				this.shuffle_mode = true;
+				this.shuffle_name = parms.shuffle;
+			}
 		}
 	}
 
@@ -81,8 +78,10 @@ export class VideoPlayer {
 				if (data != null) {
 					this.videos = rslt;
 					this.loadVideosFromList(rslt, data);
-				}
-				else {
+				} else if (this.shuffle_mode) {
+					this.videos = rslt;
+					this.loadFromShuffleHistory();
+				} else {
 					this.videos = rslt;
 					this.visible_videos = $.extend(true, [], rslt);
 					this.index = 0;
@@ -121,8 +120,17 @@ export class VideoPlayer {
 			this.index = index;
 			//this.videos = video_files;
 			this.visible_videos = $.extend(true, [], video_files);
-			this.loadVideoPlayer(video_files[index], true);
+			this.loadVideoPlayer(video_files[index], false);
 		}
+	}
+
+	loadFromShuffleHistory = () => {
+		var shuffle_str = localStorage[this.shuffle_name];
+		if (shuffle_str == null) { return; }
+		var shuffle = JSON.parse(shuffle_str);
+		this.visible_videos = shuffle.videos;
+		this.index = shuffle.index;
+		this.next();
 	}
 
 	changeVideo = (link: string, no_start: boolean = false) => {
@@ -139,11 +147,21 @@ export class VideoPlayer {
 		if (this.index > -1 && this.index < this.visible_videos.length - 1) {
 			this.loadVideoPlayer(this.visible_videos[++this.index]);
 		}
+		if (this.shuffle_mode) { this.updateShuffleHistory(); }
 	}
 	prev = () => {
 		if (this.index > 0) {
 			this.loadVideoPlayer(this.visible_videos[--this.index]);
 		}
+		if (this.shuffle_mode) { this.updateShuffleHistory(); }
+	}
+
+	updateShuffleHistory = () => {
+		var shuffle_str = localStorage[this.shuffle_name];
+		if (shuffle_str == null) { return; }
+		var shuffle = JSON.parse(shuffle_str);
+		shuffle.index = this.index;
+		localStorage[this.shuffle_name] = JSON.stringify(shuffle);
 	}
 
 	toggleSearchBox = (): void => {
@@ -192,7 +210,7 @@ export class VideoPlayer {
 		};
 	}
 
-	generateShuffle = (selected_vids: any): void => {
+	generateShuffle = (selected_vids: any): any => {
 		var list = [];
 		var x = 0;
 		for (var i = 0; i < selected_vids.max; i++) {
@@ -202,7 +220,7 @@ export class VideoPlayer {
 				}
 			}
 		}
-		this.visible_videos = list;
+		return list;
 	}
 
 	randomShuffle = (a: any): any => {
@@ -229,8 +247,25 @@ export class VideoPlayer {
 
 	loadVideoGroup = (data: any) => {
 		var vids = $.extend(true, [], this.videos);
-		var selected_vids = this.filterByGroups(data, vids);
-		this.generateShuffle(selected_vids);
+		this.shuffle_mode = true;
+		this.shuffle_name = data.name;
+		var selected_vids = this.filterByGroups(data.filter_groups, vids);
+		var shuffle = this.generateShuffle(selected_vids);
+		this.visible_videos = shuffle;
+		localStorage[data.name] = JSON.stringify({
+			index: 0,
+			videos: shuffle
+		});
+		history.replaceState(undefined, undefined, '#/videos?shuffle=' + data.name.replace(/ /g, '%20'))
+		this.loadVideoPlayer(shuffle[0], false, 0);
+		this.toggleListView();
+	}
+
+	reloadVideoGroup = (name: any) => {
+		this.shuffle_mode = true;
+		this.shuffle_name = name;
+		history.replaceState(undefined, undefined, '#/videos?shuffle=' + name.replace(/ /g, '%20'))
+		this.loadFromShuffleHistory();
 		this.toggleListView();
 	}
 

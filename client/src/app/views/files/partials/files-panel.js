@@ -89,6 +89,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                             this.nav.up_level = 'show';
                             this.is_root = false;
                         }
+                        history.replaceState(undefined, undefined, '#/?path=' + data.current_path);
                         setTimeout(() => {
                             this.show_files();
                         }, 500);
@@ -216,6 +217,7 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                     };
                 }
                 attached() {
+                    this.current_path = this.getPathFromLocationHash();
                     this.getDriveStatus().then(this.getFiles);
                     this.app_events = this.fn.mq.Subscribe((event) => {
                         if (event.target != null && event.target != 'files-panel') {
@@ -242,6 +244,13 @@ System.register(["aurelia-framework", "../../../models/FnTs", "../../../models/s
                 }
                 detached() {
                     this.app_events.dispose();
+                }
+                getPathFromLocationHash() {
+                    if (window.location.hash.indexOf('?') == -1)
+                        return '/';
+                    var match = RegExp('[?]path=([^&]*)').exec(window.location.hash);
+                    var rslt = match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+                    return rslt == null ? '/' : rslt;
                 }
                 show_loader() {
                     this.nav.show_loader = 'show';

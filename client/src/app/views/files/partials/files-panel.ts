@@ -40,6 +40,7 @@ export class FilesPanel {
 	}
 
 	attached() {
+		this.current_path = this.getPathFromLocationHash();
 		this.getDriveStatus().then(this.getFiles);
 		this.app_events = this.fn.mq.Subscribe((event: AggregateData) => {
             if (event.target != null && event.target != 'files-panel') { return; }
@@ -59,6 +60,13 @@ export class FilesPanel {
 
 	detached() {
 		this.app_events.dispose();
+	}
+
+	getPathFromLocationHash(): string {
+		if (window.location.hash.indexOf('?') == -1) return '/';
+		var match = RegExp('[?]path=([^&]*)').exec(window.location.hash);
+    	var rslt =  match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+		return rslt == null ? '/' : rslt;
 	}
 
 	show_loader() {
@@ -155,6 +163,7 @@ export class FilesPanel {
 			this.nav.up_level = 'show';
 			this.is_root = false;
 		}
+		history.replaceState(undefined, undefined, '#/?path=' + data.current_path);
 		setTimeout(() => {
 			this.show_files();
 		}, 500);
