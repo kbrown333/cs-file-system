@@ -56,6 +56,9 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         if (index != null)
                             this.index = index;
                         this.now_playing = data.name;
+                        if (this.shuffle_mode) {
+                            this.updateShuffleHistory();
+                        }
                     };
                     this.loadVideosFromList = (all_videos, data) => {
                         var map = {};
@@ -93,6 +96,15 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         this.index = shuffle.index;
                         this.next();
                     };
+                    this.updateShuffleHistory = () => {
+                        var shuffle_str = localStorage[this.shuffle_name];
+                        if (shuffle_str == null) {
+                            return;
+                        }
+                        var shuffle = JSON.parse(shuffle_str);
+                        shuffle.index = this.index;
+                        localStorage[this.shuffle_name] = JSON.stringify(shuffle);
+                    };
                     this.changeVideo = (link, no_start = false) => {
                         var player = document.getElementById('vid_player');
                         var video = document.getElementById('vid_src');
@@ -109,26 +121,11 @@ System.register(["aurelia-framework", "../../models/FnTs"], function (exports_1,
                         if (this.index > -1 && this.index < this.visible_videos.length - 1) {
                             this.loadVideoPlayer(this.visible_videos[++this.index]);
                         }
-                        if (this.shuffle_mode) {
-                            this.updateShuffleHistory();
-                        }
                     };
                     this.prev = () => {
                         if (this.index > 0) {
                             this.loadVideoPlayer(this.visible_videos[--this.index]);
                         }
-                        if (this.shuffle_mode) {
-                            this.updateShuffleHistory();
-                        }
-                    };
-                    this.updateShuffleHistory = () => {
-                        var shuffle_str = localStorage[this.shuffle_name];
-                        if (shuffle_str == null) {
-                            return;
-                        }
-                        var shuffle = JSON.parse(shuffle_str);
-                        shuffle.index = this.index;
-                        localStorage[this.shuffle_name] = JSON.stringify(shuffle);
                     };
                     this.toggleSearchBox = () => {
                         $('.panel-body[panel-type="video-list"]').toggleClass('searching');

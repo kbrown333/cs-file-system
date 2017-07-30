@@ -94,6 +94,7 @@ export class VideoPlayer {
 		this.changeVideo(data.path, no_start);
 		if (index != null) this.index = index;
 		this.now_playing = data.name;
+		if (this.shuffle_mode) { this.updateShuffleHistory(); }
 	}
 
 	loadVideosFromList = (all_videos: any, data: any) => {
@@ -133,6 +134,14 @@ export class VideoPlayer {
 		this.next();
 	}
 
+	updateShuffleHistory = () => {
+		var shuffle_str = localStorage[this.shuffle_name];
+		if (shuffle_str == null) { return; }
+		var shuffle = JSON.parse(shuffle_str);
+		shuffle.index = this.index;
+		localStorage[this.shuffle_name] = JSON.stringify(shuffle);
+	}
+
 	changeVideo = (link: string, no_start: boolean = false) => {
 		var player = <HTMLVideoElement>document.getElementById('vid_player');
 		var video = <HTMLVideoElement>document.getElementById('vid_src');
@@ -147,21 +156,11 @@ export class VideoPlayer {
 		if (this.index > -1 && this.index < this.visible_videos.length - 1) {
 			this.loadVideoPlayer(this.visible_videos[++this.index]);
 		}
-		if (this.shuffle_mode) { this.updateShuffleHistory(); }
 	}
 	prev = () => {
 		if (this.index > 0) {
 			this.loadVideoPlayer(this.visible_videos[--this.index]);
 		}
-		if (this.shuffle_mode) { this.updateShuffleHistory(); }
-	}
-
-	updateShuffleHistory = () => {
-		var shuffle_str = localStorage[this.shuffle_name];
-		if (shuffle_str == null) { return; }
-		var shuffle = JSON.parse(shuffle_str);
-		shuffle.index = this.index;
-		localStorage[this.shuffle_name] = JSON.stringify(shuffle);
 	}
 
 	toggleSearchBox = (): void => {

@@ -42,7 +42,7 @@ export class MusicPlayer {
             if (this[event.event_name] != null) { this[event.event_name](event.data); }
         });
 		//force update of songe list on server
-		this.getSongMap();
+		//this.getSongMap();
 	}
 
 	detached() {

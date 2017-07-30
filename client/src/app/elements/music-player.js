@@ -373,7 +373,6 @@ System.register(["aurelia-framework", "../models/FnTs"], function (exports_1, co
                             this[event.event_name](event.data);
                         }
                     });
-                    this.getSongMap();
                 }
                 detached() {
                     this.app_events.dispose();
