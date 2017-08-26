@@ -27,6 +27,7 @@ var mw_Files = require('./routes/files');
 var mw_Music = require('./routes/music');
 var mw_Videos = require('./routes/videos');
 var mw_Status = require('./routes/status');
+var mw_Errors = require('./routes/errors');
 
 //Route Paths to Middleware
 app.use('/', mw_Index);
@@ -34,6 +35,7 @@ app.use('/api/files', mw_Files);
 app.use('/api/music', mw_Music);
 app.use('/api/videos', mw_Videos);
 app.use('/api/status', mw_Status);
+app.use('/api/errors', mw_Errors);
 
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -64,7 +66,27 @@ app.use(function(err, req, res, next) {
     });
 });
 
+//logging
 var debug = require('debug')('cs-file-system');
+Winston = require('winston');
+const err_logger = new Winston.Logger({
+    level: 'verbose',
+    transports: [
+      new Winston.transports.Console({
+        timestamp: true
+      }),
+      new Winston.transports.File({
+        filename: 'error-log.txt',
+        timestamp: true
+      })
+    ]
+});
+global.error_log = {
+    log: function(msg, data) {
+        err_logger.log('info', msg, data);
+    }
+}
+
 
 //START SERVER
 app.set('port', process.env.PORT || 3000);
