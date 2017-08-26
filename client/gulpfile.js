@@ -11,19 +11,16 @@ var vendor_config = {
         "vendor-build": {
             includes: [
                 'aurelia-bootstrapper',
-                'aurelia-dependency-injection',
                 'aurelia-framework',
                 'aurelia-templating-binding',
                 'aurelia-templating-resources',
                 'aurelia-loader-default',
-                'aurelia-fetch-client',
                 'aurelia-router',
                 'aurelia-templating-router',
                 'aurelia-history-browser',
                 'aurelia-logging-console',
                 'aurelia-event-aggregator',
-                'jquery',
-				'bootstrap'
+                'aurelia-pal-browser'
             ],
             options: {
                 inject: true,
