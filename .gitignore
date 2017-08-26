@@ -28,6 +28,7 @@ node_modules/*
 jsdb/*
 !jsdb/data_model.js
 npm-debug.log
+error-log.txt
 !scripts
 scripts/*
 !scripts/startup
