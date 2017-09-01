@@ -12,10 +12,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
 
 //CREATE STATIC PATH FOR CLIENT FILES
-app.set('views', path.join(__dirname, 'client/src'));
+app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html')
-app.use(express.static(path.join(__dirname, 'client/src')));
+app.use(express.static(path.join(__dirname, 'client')));
 app.use('/media', express.static(path.join(__dirname, 'dev')));
 
 //INITIALIZE JSON-DABATABSE
