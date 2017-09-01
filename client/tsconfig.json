@@ -5,9 +5,9 @@
         "emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"target": "es6",
-		"module": "system",
+		"module": "es2015",
 		"typeRoots" : ["./typings/globals"]
-    },	
+    },
     "include": [
         "src/**/*"
     ],

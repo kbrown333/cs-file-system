@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Cloudspire Technology</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link href='<%= src_path %>app/javascript/jquery.ui-interactions/jquery-ui.min.css' rel='stylesheet' type='text/css'>
+    <link href='<%= src_path %>app/javascript/jquery.ui-interactions/jquery-ui.theme.min.css' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="<%= src_path %>app/styles/aurelia-default.css" />
+    <link rel="stylesheet" href="<%= src_path %>app/styles/btsp-cyborg.css" />
+    <link rel="stylesheet" href="<%= src_path %>app/styles/bootstrap-addon.css" />
+    <link rel="stylesheet" href="<%= src_path %>app/styles/comfortaa.css" />
+    <script type="text/javascript" src="<%= src_path %>app/javascript/jquery.js"></script>
+	<script type="text/javascript" src="<%= src_path %>app/javascript/bootstrap.min.js"></script>
+    <script type="text/javascript" src="<%= src_path %>app/javascript/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="<%= src_path %>app/javascript/wavesurfer.js"></script>
+    <script type="text/javascript" src="<%= src_path %>app/javascript/polyfill.min.js"></script>
+    <script type="text/javascript" src="<%= src_path %>app/javascript/global-error.js"></script>
+    <style>
+        body {
+            background-image: url(./src/app/images/pattern_40.gif);
+        }
+    </style>
+</head>
+<body>
+    <div aurelia-app="main">
+        <div class="splash">
+            <div class="message">Loading your content...</div>
+            <i class="fa fa-spinner fa-spin fa-3x"></i>
+        </div>
+        <script src="<%= src_path %>jspm_packages/system.js"></script>
+        <script src="<%= src_path %>config.js"></script>
+        <script>
+            SystemJS.import('aurelia-bootstrapper');
+        </script>
+    </div>
+</body>
+</html>
